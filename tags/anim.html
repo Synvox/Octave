@@ -1,0 +1,30 @@
+<anim>
+  <style type="less">
+    anim[in] {
+      opacity: 1;
+      transform: scale(1) translate(0,0);
+      transition-duration: .4s;
+      &.fade {
+        opacity: 0;
+      }
+      &.scale {
+        transform: scale(.5);
+        opacity: 0;
+      }
+      &.up {
+        transform: translateY(50px);
+      }
+      &.left {
+        transform: translateX(50px);
+      }
+      &.down {
+        transform: translateY(-50px);
+      }
+      &.right {
+        transform: translateX(-50px);
+      }
+    }
+  </style>
+  <yield/>
+  this.mixin(Power.anim);
+</anim>

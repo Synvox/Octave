@@ -1,0 +1,169 @@
+<track onclick={ select }>
+  <div if={ !active }>
+    <div class="data center">{ data.Name }</div>
+    <div class="data right">
+      <span if={ active && currentTimeStr }>{ currentTimeStr } / </span>
+      { timeStr }
+    </div>
+  </div>
+  <div if={ active }>
+    <div class="circle playing" onclick={ playPause }></div>
+    <h2>{ data.Name }</h2>
+    <h3>{ data.Artist }</h3>
+    <div class="progress">
+      <div class="value"></div>
+    </div>
+  </div>
+
+  <style type="less">
+    track {
+      cursor: pointer;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      color: #ccc;
+
+      &:nth-child(even) {
+        background: rgba(0,0,0,.01);
+      }
+      &:hover {
+        color: white;
+        background: rgba(0,0,0,.1);
+      }
+      &.active {
+        color: #444;
+        background: #eee;
+        height: 160px;
+        margin: 20px;
+        border-radius: 3px;
+        box-shadow: 0px 0px 3px rgba(0,0,0,.3), 0px 0px 16px rgba(0,0,0,.1);
+      }
+      .data {
+        display: inline-block;
+        margin: 0px 20px;
+        line-height: 40px;
+        &.left {
+          width: 30px;
+          text-align: right;
+        }
+        &.center {
+          min-width: 400px;
+          width: 80vw;
+        }
+        &.right {
+          position: absolute;
+          right: 0px;
+        }
+      }
+      h2 {
+        color: white;
+        background: black;
+        border-radius: 3px;
+        position: absolute;
+        top: 20px;
+        left: 100px;
+        line-height: 40px;
+        font-size: 25px;
+        display: inline-block;
+        padding: 0px 32px;
+      }
+      h3 {
+        color: white;
+        background: black;
+        border-radius: 3px;
+        position: absolute;
+        top: 62px;
+        left: 100px;
+        line-height: 30px;
+        font-size: 15px;
+        display: inline-block;
+        padding: 0px 32px;
+      }
+      .circle {
+        width: 70px;
+        height: 70px;
+        background: #ff8000;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        border: none;
+        border-radius: 1000px;
+        &:active,&.playing {
+          background: #0080ff;
+        }
+        &.playing:active {
+          background: #ff8000;
+        }
+      }
+      .progress {
+        position: absolute;
+        left: 20px;
+        top: 120px;
+        right: 20px;
+        height: 6px;
+        background: #101010;
+        border-radius: 1000px;
+        overflow: hidden;
+        .value {
+          background: #ff8000;
+          border-radius: 1000px;
+          position: absolute;
+          top: 1px;
+          left: 1px;
+          bottom: 1px;
+          width: 100%;
+          transform-origin: 0;
+        }
+      }
+    }
+  </style>
+  <script>
+    var self = this
+    self.data = self.opts.data
+    self.index = self.opts.index
+    self.time = new Date(self.data['Total Time'])
+
+    self.timeStr = self.time.getMinutes() + ':' + ((self.time.getSeconds()<10)? '0':'') + self.time.getSeconds()
+
+    var $r = $(self.root)
+
+    self.active = false
+    self.select = ()=>{
+      if (self.active) return
+
+      App.trigger('select_track',self.index)
+      self.active = true
+      $r.addClass('active')
+
+      App.one('select_track',function(){
+        self.active = false
+        $r.removeClass('active')
+        $r.find('.progress .value').css({'width':'0%'})
+        App.off('track_time_update',self.updateTime)
+        self.update()
+      })
+
+      App.on('track_time_update',self.updateTime)
+
+      self.update()
+    }
+
+    self.updateTime = (time)=>{
+      var min = Math.floor(time / 60)
+      var sec = Math.floor(time - min*60)
+      self.currentTimeStr = min + ':' + ((sec < 10)?'0':'') + sec
+      self.update()
+      var percent = time * 1000 / self.data['Total Time']*100
+      $r.find('.progress .value').css({'transform':'translateX(-'+(100-percent)+'%)'})
+    }
+
+    self.playPause = ()=>{
+      $r.find('.circle').toggleClass('playing')
+      window.setTimeout(()=>{
+        App.trigger('play_pause')
+      },1)
+
+    }
+
+  </script>
+</track>
