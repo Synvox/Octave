@@ -1,17 +1,11 @@
 <track onclick={ select }>
-  <div if={ !active }>
-    <div class="data center">{ data.Name }</div>
-    <div class="data right">
-      <span if={ active && currentTimeStr }>{ currentTimeStr } / </span>
-      { timeStr }
-    </div>
+  <div class="data center">{ data.Name }</div>
+  <div class="data right">
+    <span if={ active && currentTimeStr }>{ currentTimeStr } / </span>
+    { timeStr }
   </div>
-  <div if={ active }>
-    <div class="circle playing" onclick={ playPause }></div>
-    <h2>{ data.Name }</h2>
-    <h3>{ data.Artist }</h3>
-    <div class="progress">
-      <div class="value"></div>
+  <div class="progress" if={ active }>
+    <div class="value">
     </div>
   </div>
 
@@ -21,22 +15,19 @@
       display: block;
       position: relative;
       overflow: hidden;
-      color: #ccc;
+      color: #444;
+      height: 40px;
 
       &:nth-child(even) {
         background: rgba(0,0,0,.01);
       }
       &:hover {
-        color: white;
+        color: black;
         background: rgba(0,0,0,.1);
       }
       &.active {
         color: #444;
         background: #eee;
-        height: 160px;
-        margin: 20px;
-        border-radius: 3px;
-        box-shadow: 0px 0px 3px rgba(0,0,0,.3), 0px 0px 16px rgba(0,0,0,.1);
       }
       .data {
         display: inline-block;
@@ -53,6 +44,7 @@
         &.right {
           position: absolute;
           right: 0px;
+          top: 0px;
         }
       }
       h2 {
@@ -98,7 +90,7 @@
       .progress {
         position: absolute;
         left: 20px;
-        top: 120px;
+        bottom: 0px;
         right: 20px;
         height: 6px;
         background: #101010;
@@ -113,6 +105,7 @@
           bottom: 1px;
           width: 100%;
           transform-origin: 0;
+          tranform: translateX(-100%);
         }
       }
     }
