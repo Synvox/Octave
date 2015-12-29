@@ -1,17 +1,13 @@
-'use strict';
-
-window.riot = require('riot');
-window.$ = require('jquery');
+riot = require('riot');
+$ = require('jquery');
 
 // Main event store
-window.App = riot.observable()
-
+App = riot.observable()
 
 // Pouch database
 var PouchDB = require('pouchdb');
 PouchDB.plugin(require('pouchdb-find'));
-window.db = new PouchDB('OctaveDB');
-
+db = new PouchDB('OctaveDB');
 
 // Import
 // Artist: "O'Donnell/Salvatori TotalAudio"
@@ -35,8 +31,15 @@ window.db = new PouchDB('OctaveDB');
 // Track Type: "File"
 // Year: 1999
 (function(){
+  'use strict';
+  var getuser = function() {
+  	var username = require('child_process').execSync( "whoami", { encoding: 'utf8', timeout: 1000 } );
+  	return String(username).trim();
+  }
   var os = require('os')
-  var itunesDB = require("itunes-db").loadSync("/Users/ryan/Music/iTunes/iTunes Music Library.xml")
+  var xmllocation = "/Users/"+(getuser())+"/Music/iTunes/iTunes Music Library.xml";
+  console.log(xmllocation)
+  var itunesDB = require("itunes-db").loadSync(xmllocation)
   var tracks = itunesDB.tracks
 
   db.allDocs({
@@ -70,4 +73,4 @@ window.db = new PouchDB('OctaveDB');
     })
   }
 
-})//();
+})();

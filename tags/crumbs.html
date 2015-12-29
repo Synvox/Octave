@@ -1,14 +1,19 @@
 <crumbs>
 
   <ul if={ data }>
-    <li>{data.artist}</li>
+    <li>Library</li>
+    <li class="chevron">›</li>
+    <li if={ data.artist }>{data.artist}</li>
     <li class="chevron" if={ data.artist }>›</li>
-    <li>{data.album}</li>
+    <li if={ data.album }>{data.album}</li>
     <li class="chevron" if={ data.album }>›</li>
     <li>{data.name}</li>
   </ul>
 
   <style type="less">
+    body {
+      background: #202020;
+    }
     crumbs {
       background: #202020;
       ul {

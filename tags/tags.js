@@ -9,7 +9,7 @@ riot.tag2('cell', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.cell);
 });
 
-riot.tag2('crumbs', '<ul if="{data}"> <li>{data.artist}</li> <li class="chevron" if="{data.artist}">›</li> <li>{data.album}</li> <li class="chevron" if="{data.album}">›</li> <li>{data.name}</li> </ul>', 'crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:white;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}', '', function(opts) {
+riot.tag2('crumbs', '<ul if="{data}"> <li>Library</li> <li class="chevron">›</li> <li if="{data.artist}">{data.artist}</li> <li class="chevron" if="{data.artist}">›</li> <li if="{data.album}">{data.album}</li> <li class="chevron" if="{data.album}">›</li> <li>{data.name}</li> </ul>', 'body{background:#202020}crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:white;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}', '', function(opts) {
 
 var self = this;
 self.data = null;
@@ -36,7 +36,7 @@ self.playPrev = function () {
 };
 }, '{ }');
 
-riot.tag2('track-list', '<track each="{val, i in tracks}" index="{i}" data="{val}"></track>', 'track-list{color:#333;display:block;width:100%;white-space:nowrap}track-list .cell{padding:8px;display:inline-block;float:left}track-list .cell:nth-child(1){width:30vw}track-list .cell:nth-child(2){width:20vw}', '', function(opts) {
+riot.tag2('track-list', '<track each="{val, i in tracks}" index="{i}" data="{val}"></track>', 'track-list{color:#333;background:white;display:block;width:100%;white-space:nowrap}track-list .cell{padding:8px;display:inline-block;float:left}track-list .cell:nth-child(1){width:30vw}track-list .cell:nth-child(2){width:20vw}', '', function(opts) {
 var self = this;
 self.tracks = [];
 
@@ -47,6 +47,14 @@ db.allDocs({
 }).then(function (result) {
 
   for (var i in result.rows) self.tracks.push(result.rows[i].doc);
+
+  self.tracks.sort(function (a, b) {
+    var keyA = a.name.trim(),
+        keyB = b.name.trim();
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+  });
 
   self.update();
 }).catch(function (err) {
@@ -98,7 +106,7 @@ App.on('play_prev', () => {
 });
 }, '{ }');
 
-riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track:hover{color:black;background:rgba(0,0,0,0.1)}track.active{color:#fff;background:#FF8D00;text-shadow:0 1px 1px #e67f00;box-shadow:0 -0.5px 0 1px #e67f00 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', 'onclick="{select}"', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track:hover{color:black;background:rgba(0,0,0,0.1)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', 'onclick="{select}"', function(opts) {
 var self = this;
 self.data = self.opts.data;
 self.index = self.opts.index;
