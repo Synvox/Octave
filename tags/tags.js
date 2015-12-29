@@ -23,7 +23,7 @@ riot.tag2('panel', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.panel);
 });
 
-riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M6,18.14V6.14H8V18.14H6M9.5,12.14L18,6.14V18.14L9.5,12.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M16,18.14H18V6.14H16M6,18.14L14.5,12.14L6,6.14V18.14Z"></path> </svg> </div> <div class="center"> </div> <div class="right"> <input> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{padding:12px 0;text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right input{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;height:30px;width:calc(90%);padding:0 8px}toolbar .right input:focus{outline:none}', '', function(opts) {
+riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M6,18.14V6.14H8V18.14H6M9.5,12.14L18,6.14V18.14L9.5,12.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M16,18.14H18V6.14H16M6,18.14L14.5,12.14L6,6.14V18.14Z"></path> </svg> </div> <div class="center" id="waveform"> </div> <div class="right"> <input> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right input{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;height:30px;width:calc(90%);padding:0 8px}toolbar .right input:focus{outline:none}', '', function(opts) {
 var self = this;
 self.playPause = function () {
   App.trigger('play_pause');
@@ -86,6 +86,17 @@ var sort = function () {
   self.update();
 };
 
+var wavesurfer = Object.create(WaveSurfer);
+self.on('mount', function () {
+  wavesurfer.init({
+    container: '#waveform',
+    height: 50
+  });
+  wavesurfer.on('ready', function () {
+    wavesurfer.play();
+  });
+});
+
 var track = null;
 var trackIndex = null;
 var updateInterval = null;
@@ -94,32 +105,31 @@ App.on('select_track', function (index) {
 
   if (updateInterval) window.clearInterval(updateInterval);
 
-  if (track) track.pause();
+  if (!wavesurfer.isPlaying()) wavesurfer.pause();
 
   var newData = self.tracks[trackIndex];
 
   App.trigger('selected_track', newData);
 
-  track = new Audio(newData.location);
-  track.play();
+  wavesurfer.load(newData.location);
 
   self.updateTime();
 });
 
 self.updateTime = () => {
-  if (track.paused) return;
+  if (!wavesurfer.isPlaying()) return;
 
-  App.trigger('track_time_update', track.currentTime, track.duration);
+  App.trigger('track_time_update', wavesurfer.getCurrentTime(), wavesurfer.getDuration());
   updateInterval = window.setTimeout(self.updateTime, 1000);
 };
 
 App.on('play_pause', () => {
-  if (track.paused) {
-    track.play();
+  if (!wavesurfer.isPlaying()) {
+    wavesurfer.play();
     App.trigger('track_playing');
     self.updateTime();
   } else {
-    track.pause();
+    wavesurfer.pause();
     App.trigger('track_pausing');
   }
 });

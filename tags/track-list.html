@@ -78,6 +78,16 @@
       self.update();
     }
 
+    var wavesurfer = Object.create(WaveSurfer);
+    self.on('mount',function(){
+      wavesurfer.init({
+        container: '#waveform',
+        height: 50
+      });
+      wavesurfer.on('ready', function () {
+        wavesurfer.play();
+      });
+    })
 
     var track = null
     var trackIndex = null;
@@ -88,33 +98,32 @@
       if (updateInterval)
         window.clearInterval(updateInterval)
 
-      if (track)
-        track.pause()
+      if (!wavesurfer.isPlaying())
+        wavesurfer.pause()
 
       var newData = self.tracks[trackIndex]
 
       App.trigger('selected_track',newData)
 
-      track = new Audio(newData.location)
-      track.play()
+      wavesurfer.load(newData.location);
 
       self.updateTime()
     })
 
     self.updateTime = ()=>{
-      if (track.paused) return
+      if (!wavesurfer.isPlaying()) return
 
-      App.trigger('track_time_update',track.currentTime, track.duration)
+      App.trigger('track_time_update',wavesurfer.getCurrentTime(), wavesurfer.getDuration())
       updateInterval = window.setTimeout(self.updateTime,1000)
     }
 
     App.on('play_pause',()=>{
-      if (track.paused) {
-        track.play()
+      if (!wavesurfer.isPlaying()) {
+        wavesurfer.play()
         App.trigger('track_playing')
         self.updateTime()
       } else {
-        track.pause()
+        wavesurfer.pause()
         App.trigger('track_pausing')
       }
     })
