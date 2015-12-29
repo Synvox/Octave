@@ -45,9 +45,36 @@ db.allDocs({
   attachments: false,
   limit: 10000
 }).then(function (result) {
+  for (var i in result.rows) {
+    add(result.rows[i].doc);
+  }
 
-  for (var i in result.rows) self.tracks.push(result.rows[i].doc);
+  sort();
+}).catch(function (err) {
+  console.log(err);
+});
 
+var changeDebounce = null;
+var changes = db.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', function (change) {
+  add(change.doc);
+  if (changeDebounce) window.clearTimeout(changeDebounce);
+  changeDebounce = window.setTimeout(function () {
+    sort();
+  }, 100);
+}).on('complete', function (info) {
+  // changes() was canceled
+}).on('error', function (err) {
+  console.log(err);
+});
+
+var add = function (doc) {
+  self.tracks.push(doc);
+};
+var sort = function () {
   self.tracks.sort(function (a, b) {
     var keyA = a.name.trim(),
         keyB = b.name.trim();
@@ -57,17 +84,15 @@ db.allDocs({
   });
 
   self.update();
-}).catch(function (err) {
-  console.log(err);
-});
+};
 
 var track = null;
 var trackIndex = null;
-var interval = null;
+var updateInterval = null;
 App.on('select_track', function (index) {
   trackIndex = index;
 
-  if (interval) window.clearInterval(track);
+  if (updateInterval) window.clearInterval(updateInterval);
 
   if (track) track.pause();
 
@@ -85,7 +110,7 @@ self.updateTime = () => {
   if (track.paused) return;
 
   App.trigger('track_time_update', track.currentTime, track.duration);
-  interval = window.setTimeout(self.updateTime, 1000);
+  updateInterval = window.setTimeout(self.updateTime, 1000);
 };
 
 App.on('play_pause', () => {

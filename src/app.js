@@ -30,7 +30,7 @@ db = new PouchDB('OctaveDB');
 // Track ID: 9667
 // Track Type: "File"
 // Year: 1999
-(function(){
+window.setTimeout(function(){
   'use strict';
   var getuser = function() {
   	var username = require('child_process').execSync( "whoami", { encoding: 'utf8', timeout: 1000 } );
@@ -73,4 +73,4 @@ db = new PouchDB('OctaveDB');
     })
   }
 
-})();
+},1000);
