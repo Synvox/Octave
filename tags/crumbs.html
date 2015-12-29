@@ -1,10 +1,46 @@
 <crumbs>
 
+  <ul if={ data }>
+    <li>{data.artist}</li>
+    <li class="chevron" if={ data.artist }>›</li>
+    <li>{data.album}</li>
+    <li class="chevron" if={ data.album }>›</li>
+    <li>{data.name}</li>
+  </ul>
+
   <style type="less">
     crumbs {
       background: #202020;
+      ul {
+        height: 40px;
+        font-size: 16px;
+        color: white;
+        line-height: 30px;
+        position: absolute;
+        bottom: 0px;
+        left: 20px;
+        -webkit-user-select: none;
+        li {
+          display: inline-block;
+          &.chevron {
+            font-size: 2.5em;
+            position: relative;
+            top: 6px;
+            opacity: .5;
+          }
+        }
+      }
     }
   </style>
-  <script></script>
+  <script>
+
+    var self = this
+    self.data = null;
+
+    App.on('selected_track',function(data){
+      self.update({data: data});
+    })
+
+  </script>
 
 </crumbs>

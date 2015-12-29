@@ -1,13 +1,13 @@
 <toolbar>
   <div class="inner">
     <div class="left">
-      <svg viewBox="0 0 24 24">
+      <svg viewBox="0 0 24 24" onclick={ playPrev }>
         <path d="M6,18.14V6.14H8V18.14H6M9.5,12.14L18,6.14V18.14L9.5,12.14Z" />
       </svg>
       <svg viewBox="0 0 24 24" onclick={ playPause }>
         <path d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
       </svg>
-      <svg viewBox="0 0 24 24">
+      <svg viewBox="0 0 24 24" onclick={ playNext }>
         <path d="M16,18.14H18V6.14H16M6,18.14L14.5,12.14L6,6.14V18.14Z" />
       </svg>
     </div>
@@ -56,12 +56,16 @@
         left: 0px;
         bottom: 0px;
         z-index: 10;
+        -webkit-user-select: none;
         box-shadow: 0px 0px 2px rgba(0,0,0,.3),
                     0px 0px 16px rgba(0,0,0,.1);
         svg {
           width: 40px;
           path {
-            fill: #333;
+            fill: #555;
+          }
+          &:active path {
+            fill: #000;
           }
         }
       }
@@ -108,6 +112,12 @@
     var self = this;
     self.playPause = function(){
       App.trigger('play_pause')
+    }
+    self.playNext = function(){
+      App.trigger('play_next')
+    }
+    self.playPrev = function(){
+      App.trigger('play_prev')
     }
   </script>
 </toolbar>

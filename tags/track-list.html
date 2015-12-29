@@ -3,9 +3,8 @@
 
   <style type="less">
 
-  @colWidth: 30vw;
+  @colWidth: 20vw;
   track-list {
-    font-family: sans-serif;
     color: #333;
     display: block;
     width: 100%;
@@ -46,9 +45,10 @@
     });
 
     var track = null
+    var trackIndex = null;
     var interval = null
     App.on('select_track',function(index){
-      App.trigger('will_select_track')
+      trackIndex = index
 
       if (interval)
         window.clearInterval(track)
@@ -56,7 +56,11 @@
       if (track)
         track.pause()
 
-      track = new Audio(self.tracks[index].location)
+      var newData = self.tracks[trackIndex]
+
+      App.trigger('selected_track',newData)
+
+      track = new Audio(newData.location)
       track.play()
 
       self.updateTime()
@@ -78,6 +82,12 @@
         track.pause()
         App.trigger('track_pausing')
       }
+    })
+    App.on('play_next',()=>{
+      App.trigger('select_track',trackIndex + 1)
+    })
+    App.on('play_prev',()=>{
+      App.trigger('select_track',trackIndex - 1)
     })
 
   </script>

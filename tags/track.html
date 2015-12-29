@@ -19,8 +19,10 @@
         background: rgba(0,0,0,.1);
       }
       &.active {
-        color: #eee;
-        background: #0080ff;
+        color: #fff;
+        background: #FF8D00;
+        text-shadow: 0px 1px 1px darken(#FF8D00,5%);
+        box-shadow: 0px -.5px 0px 1px darken(#FF8D00,5%) inset;
       }
       .cell {
         overflow: hidden;
@@ -43,6 +45,11 @@
       if (self.active) return
 
       App.trigger('select_track',self.index)
+    }
+
+    App.on('select_track',function(index){
+      if (index !== self.index) return;
+
       self.active = true
       $r.addClass('active')
 
@@ -57,7 +64,7 @@
       App.on('track_time_update',self.updateTime)
 
       self.update()
-    }
+    })
 
     self.updateTime = (time,duration)=>{
       var min = Math.floor(time / 60)
