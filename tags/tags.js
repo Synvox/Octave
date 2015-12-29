@@ -95,6 +95,9 @@ self.on('mount', function () {
   wavesurfer.on('ready', function () {
     wavesurfer.play();
   });
+  wavesurfer.on('finish', function () {
+    App.trigger('play_next');
+  });
 });
 
 var track = null;
