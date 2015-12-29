@@ -1,4 +1,4 @@
-<track onclick={ select }>
+<track>
   <div class="cell">{ data.name }</div>
   <div class="cell">{ data.album }</div>
   <div class="cell">{ data.artist }</div>
@@ -43,9 +43,9 @@
     self.active = false
     self.select = ()=>{
       if (self.active) return
-
       App.trigger('select_track',self.index)
     }
+    $r.click(self.select);
 
     App.on('select_track',function(index){
       if (index !== self.index) return;

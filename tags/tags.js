@@ -106,7 +106,7 @@ App.on('play_prev', () => {
 });
 }, '{ }');
 
-riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track:hover{color:black;background:rgba(0,0,0,0.1)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', 'onclick="{select}"', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track:hover{color:black;background:rgba(0,0,0,0.1)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
 var self = this;
 self.data = self.opts.data;
 self.index = self.opts.index;
@@ -118,9 +118,9 @@ var $r = $(self.root);
 self.active = false;
 self.select = () => {
   if (self.active) return;
-
   App.trigger('select_track', self.index);
 };
+$r.click(self.select);
 
 App.on('select_track', function (index) {
   if (index !== self.index) return;
