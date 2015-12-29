@@ -1,0 +1,85 @@
+<track-list>
+  <track each={ val, i in tracks } index={ i } data={ val }></track>
+
+  <style type="less">
+
+  @colWidth: 30vw;
+  track-list {
+    font-family: sans-serif;
+    color: #333;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    .cell {
+      padding: 8px;
+      display: inline-block;
+      float: left;
+      &:nth-child(1) {
+        width: @colWidth * 1.5;
+      }
+      &:nth-child(2) {
+        width: @colWidth;
+      }
+      &:nth-child(3) {
+        //width: @colWidth;
+      }
+    }
+  }
+  </style>
+  <script>
+    var self = this
+    self.tracks = [];
+
+    db.allDocs({
+      include_docs: true,
+      attachments: false,
+      limit: 10000
+    }).then(function (result) {
+
+      for(var i in result.rows)
+        self.tracks.push(result.rows[i].doc)
+
+      self.update();
+
+    }).catch(function (err) {
+      console.log(err);
+    });
+
+    var track = null
+    var interval = null
+    App.on('select_track',function(index){
+      App.trigger('will_select_track')
+
+      if (interval)
+        window.clearInterval(track)
+
+      if (track)
+        track.pause()
+
+      track = new Audio(self.tracks[index].location)
+      track.play()
+
+      self.updateTime()
+    })
+
+    self.updateTime = ()=>{
+      if (track.paused) return
+
+      App.trigger('track_time_update',track.currentTime, track.duration)
+      interval = window.setTimeout(self.updateTime,1000)
+    }
+
+    App.on('play_pause',()=>{
+      if (track.paused) {
+        track.play()
+        App.trigger('track_playing')
+        self.updateTime()
+      } else {
+        track.pause()
+        App.trigger('track_pausing')
+      }
+    })
+
+  </script>
+
+</track-list>

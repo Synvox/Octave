@@ -38,6 +38,8 @@
     "itunes-db": "^0.4.0",
     "jquery": "^2.1.4",
     "less": "^2.5.3",
+    "pouchdb": "^5.1.0",
+    "pouchdb-find": "^0.8.0",
     "riot": "^2.3.12"
   }
 }

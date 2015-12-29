@@ -1,0 +1,113 @@
+<toolbar>
+  <div class="inner">
+    <div class="left">
+      <svg viewBox="0 0 24 24">
+        <path d="M6,18.14V6.14H8V18.14H6M9.5,12.14L18,6.14V18.14L9.5,12.14Z" />
+      </svg>
+      <svg viewBox="0 0 24 24" onclick={ playPause }>
+        <path d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
+      </svg>
+      <svg viewBox="0 0 24 24">
+        <path d="M16,18.14H18V6.14H16M6,18.14L14.5,12.14L6,6.14V18.14Z" />
+      </svg>
+    </div>
+    <div class="center">
+    </div>
+    <div class="right">
+      <input>
+    </div>
+  </div>
+  <crumbs></crumbs>
+  <style type="less">
+    toolbar {
+      display: block;
+      height: 110px;
+      position: fixed;
+      left: 0px;
+      right: 0px;
+      top: 0px;
+      background: white;
+      box-shadow: 0px 0px 2px rgba(0,0,0,.3),
+                  0px 0px 16px rgba(0,0,0,.1);
+      overflow: hidden;
+      .inner {
+        position: absolute;
+        top: 60px;
+        height: 50px;
+        left: 0px;
+        right: 0px;
+        overflow: hidden;
+        z-index: 10;
+      }
+      crumbs {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 60px;
+        top: 0px;
+        z-index: 9;
+      }
+      .left {
+        padding: 4px 0px;
+        width: 25vw;
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        z-index: 10;
+        box-shadow: 0px 0px 2px rgba(0,0,0,.3),
+                    0px 0px 16px rgba(0,0,0,.1);
+        svg {
+          width: 40px;
+          path {
+            fill: #333;
+          }
+        }
+      }
+      .center {
+        padding: 12px 0px;
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        right: 25vw;
+        left: 25vw;
+        bottom: 0px;
+        z-index: 9;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        background: rgba(0,0,0,.03);
+      }
+      .right {
+        width: 25vw;
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        z-index: 10;
+        box-shadow: 0px 0px 2px rgba(0,0,0,.3),
+                    0px 0px 16px rgba(0,0,0,.1);
+        input {
+          border: 1px solid #ccc;
+          border-radius: 3px;
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          height: 30px;
+          width: calc(100% - 10px);
+          padding: 0px 8px;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+  </style>
+  <script>
+    var self = this;
+    self.playPause = function(){
+      App.trigger('play_pause')
+    }
+  </script>
+</toolbar>

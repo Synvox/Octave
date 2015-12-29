@@ -1,99 +1,20 @@
 <app>
-
-  <panel width="100vw" height="80px" class="toolbar-panel"></panel>
-  <panel width="20vw" bottom="0" top="80px" class="menu-panel">
-
-  </panel>
-  <panel width="80vw" bottom="0" top="80px" right="0" class="main-panel">
-    <cell pos="T0 L0 R0 H8" style="background: blue;">
-
-    </cell>
-    <cell pos="T8 L0 R0 B0" class="songs">
-      <track each={ val, i in parent.parent.tracks } index={ i } data={ val }></track>
-    </cell>
-  </panel>
+  <toolbar>
+  </toolbar>
+  <track-list></track-list>
 
   <style type="less">
   html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var,b, u, i, center,dl, dt, dd, ol, ul, li,fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td,article, aside, canvas, details, embed,figure, figcaption, footer, header, hgroup,menu, nav, output, ruby, section, summary,time, mark, audio, video {margin: 0;padding: 0;border: 0;font-size: 100%;font: inherit;vertical-align: baseline;}/* HTML5 display-role reset for older browsers */article, aside, details, figcaption, figure,footer, header, hgroup, menu, nav, section {display: block;}body {line-height: 1;}ol, ul {list-style: none;}blockquote, q {quotes: none;}blockquote:before, blockquote:after,q:before, q:after {content: '';content: none;}table {border-collapse: collapse;border-spacing: 0;}
   html {
-    background: #202020;
+    background: #fff;
+    box-sizing: border-box;
   }
-  app {
-    font-family: sans-serif;
-    color: #eee;
-    display: block;
-    table {
-        table-layout: fixed;
-    }
-    .toolbar-panel {
-      background: linear-gradient(#ccc,#aaa);
-    }
-    .menu-panel {
-      background: #202020;
-    }
-    .main-panel {
-      background: #efefef;
-      .songs {
-        overflow: auto;
-      }
-    }
+  *, *:before, *:after {
+    box-sizing: inherit;
   }
+    app {
+      display: block;
+      padding-top: 110px;
+    }
   </style>
-  <script>
-    var self = this
-    var os = require('os')
-    var itunesDB = require("itunes-db").loadSync("/Users/ryan/Music/iTunes/iTunes Music Library.xml")
-
-    self.tracks = itunesDB.tracks
-
-    self.tracks.sort(function(a, b){
-      var keyA = a.Name.trim(),
-          keyB = b.Name.trim()
-      if(keyA < keyB) return -1
-      if(keyA > keyB) return 1
-      return 0
-    })
-
-    self.tracks.length = 1000;  // DEBUG
-
-    console.log(self.tracks[0])
-
-    var track = null
-    var interval = null
-    App.on('select_track',function(index){
-      App.trigger('will_select_track')
-
-      if (interval)
-        window.clearInterval(track)
-
-      if (track)
-        track.pause()
-
-      track = new Audio(self.tracks[index].Location)
-      track.play()
-
-      self.updateTime()
-    })
-
-
-    self.updateTime = ()=>{
-      if (track.paused) return
-
-      App.trigger('track_time_update',track.currentTime)
-      interval = window.setTimeout(self.updateTime,1000)
-    }
-
-    App.on('play_pause',()=>{
-      if (track.paused) {
-        track.play()
-        App.trigger('track_playing')
-        self.updateTime()
-      } else {
-        track.pause()
-        App.trigger('track_pausing')
-      }
-    })
-
-  </script>
-
 </app>
