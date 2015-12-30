@@ -2,13 +2,14 @@
   <div class="inner">
     <div class="left">
       <svg viewBox="0 0 24 24" onclick={ playPrev }>
-        <path d="M6,18.14V6.14H8V18.14H6M9.5,12.14L18,6.14V18.14L9.5,12.14Z" />
+        <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z" />
       </svg>
       <svg viewBox="0 0 24 24" onclick={ playPause }>
-        <path d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
+        <path if={ playing } d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z" />
+        <path if={ !playing }  d="M8,5.14V19.14L19,12.14L8,5.14Z" />
       </svg>
       <svg viewBox="0 0 24 24" onclick={ playNext }>
-        <path d="M16,18.14H18V6.14H16M6,18.14L14.5,12.14L6,6.14V18.14Z" />
+        <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z" />
       </svg>
     </div>
     <div class="center" id="waveform">
@@ -109,6 +110,7 @@
   </style>
   <script>
     var self = this;
+    self.playing = false;
     self.playPause = function(){
       App.trigger('play_pause')
     }
@@ -118,5 +120,11 @@
     self.playPrev = function(){
       App.trigger('play_prev')
     }
+    App.on('track_playing',function(){
+      self.update({playing: true})
+    })
+    App.on('track_pausing',function(){
+      self.update({playing: false})
+    })
   </script>
 </toolbar>

@@ -49,7 +49,7 @@ window.setTimeout(function(){
     App.initDocs = result;
 
     for(var i in tracks)
-      if (tracks[i].Location)
+      if (tracks[i].Name && tracks[i].Location)
         add(result,tracks[i])
 
   }).catch(function (err) {
@@ -74,3 +74,19 @@ window.setTimeout(function(){
   }
 
 },1000);
+
+// var electron = require('electron');
+// var globalShortcut = electron.globalShortcut;
+// var ret = globalShortcut.register('mediaplaypause', function() {
+//   App.trigger('play_pause');
+// });
+
+
+// shortcut = new Shortcut('mediaplaypause');
+// shortcut.on('active', function() { App.trigger('play_pause') });
+// shortcut.on('failed', function() { console.log("failed"); });
+// shortcut.register();
+
+require('electron').ipcRenderer.on('trigger', function(event, message) {
+  App.trigger(message);
+});

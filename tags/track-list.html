@@ -68,8 +68,8 @@
     }
     var sort = function(){
       self.tracks.sort(function(a, b){
-        var keyA = a.name.trim(),
-            keyB = b.name.trim()
+        var keyA = (a.album)?a.album.trim():'',
+            keyB = (b.album)?b.album.trim():''
         if(keyA < keyB) return -1
         if(keyA > keyB) return 1
         return 0
@@ -82,10 +82,13 @@
     self.on('mount',function(){
       wavesurfer.init({
         container: '#waveform',
-        height: 50
+        height: 50,
+        barWidth: .5,
+        progressColor: "#704FDC"
       });
       wavesurfer.on('ready', function () {
         wavesurfer.play();
+        App.trigger('track_playing')
       });
       wavesurfer.on('finish',function(){
         App.trigger('play_next')
