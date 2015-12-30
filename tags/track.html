@@ -43,12 +43,12 @@
     self.active = false
     self.select = ()=>{
       if (self.active) return
-      App.trigger('select_track',self.index)
+      App.trigger('select_track',self.data)
     }
     $r.click(self.select);
 
-    App.on('select_track',function(index){
-      if (index !== self.index) return;
+    App.on('selected_track',function(data){
+      if (data !== self.data) return;
 
       self.active = true
       $r.addClass('active')
@@ -56,37 +56,17 @@
       App.one('select_track',function(){
         self.active = false
         $r.removeClass('active')
-        $r.find('.progress .value').css({'width':'0%'})
-        App.off('track_time_update',self.updateTime)
         self.update()
       })
 
-      App.on('track_time_update',self.updateTime)
-
       self.update()
     })
-
-    self.updateTime = (time,duration)=>{
-      var min = Math.floor(time / 60)
-      var sec = Math.floor(time - min*60)
-      self.currentTimeStr = min + ':' + ((sec < 10)?'0':'') + sec
-
-      min = Math.floor(duration / 60)
-      sec = Math.floor(duration - min*60)
-      self.timeStr = min + ':' + ((sec < 10)?'0':'') + sec
-
-      self.update()
-
-      var percent = (time / duration)*100
-      $r.find('.progress .value').css({'transform':'translateX(-'+(100-percent)+'%)'})
-    }
 
     self.playPause = ()=>{
       $r.find('.circle').toggleClass('playing')
       window.setTimeout(()=>{
         App.trigger('play_pause')
       },1)
-
     }
 
   </script>

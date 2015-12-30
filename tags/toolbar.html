@@ -15,7 +15,10 @@
     <div class="center" id="waveform">
     </div>
     <div class="right">
-      <input>
+      <form onsubmit={ search }>
+        <input type="submit" hidden>
+        <input onkeyup={ search } class="query">
+      </form>
     </div>
   </div>
   <crumbs></crumbs>
@@ -114,6 +117,7 @@
   <script>
     var self = this;
     self.playing = false;
+
     self.playPause = function(){
       App.trigger('play_pause')
     }
@@ -129,5 +133,17 @@
     App.on('track_pausing',function(){
       self.update({playing: false})
     })
+
+    var timeout = null;
+    self.search =  function(){
+      var query = $(self.root).find('input.query').val()
+
+      if (timeout)
+        window.clearTimeout(timeout)
+
+      timeout = window.setTimeout(function(){
+        App.trigger('filter_tracks_by',query.toLowerCase().split(' '))
+      },500)
+    }
   </script>
 </toolbar>

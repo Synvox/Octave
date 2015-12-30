@@ -1,5 +1,5 @@
 <track-list>
-  <track each={ val, i in tracks } index={ i } data={ val }></track>
+  <track each={ val, i in renderedTracks } index={ i } data={ val }></track>
 
   <style type="less">
 
@@ -28,17 +28,18 @@
   </style>
   <script>
     var self = this
+
     self.tracks = [];
+    self.renderedTracks = [];
 
     db.allDocs({
       include_docs: true,
-      attachments: false,
-      limit: 10000
+      attachments: false
     }).then(function (result) {
       for(var i in result.rows) {
         add(result.rows[i].doc)
       }
-
+      console.log(self.tracks)
       sort();
 
     }).catch(function (err) {
@@ -96,7 +97,39 @@
         return 0
       })
 
-      self.update();
+      fastRender();
+    }
+
+    var fastRenderTimeout = null;
+    function fastRender(){
+      if (fastRenderTimeout)
+        window.clearTimeout(fastRenderTimeout);
+
+      self.renderedTracks = [];
+
+      var targetLength = self.tracks.length,
+          page = 0,
+          pageSize = 500,
+          ms = 50;
+
+      function addTracks(){
+
+        var end = (page+1)*pageSize;
+        if (end > targetLength) {
+          end = targetLength
+        } else {
+          fastRenderTimeout = window.setTimeout(function(){
+            addTracks();
+          },ms);
+        }
+
+        self.renderedTracks = self.renderedTracks.concat(self.tracks.slice(page*pageSize, end))
+
+        page++;
+        self.update();
+      }
+
+      addTracks();
     }
 
     var wavesurfer = Object.create(WaveSurfer);
@@ -106,10 +139,12 @@
         height: 50,
         progressColor: "#704FDC"
       });
+
       wavesurfer.on('ready', function () {
         wavesurfer.play();
         App.trigger('track_playing')
       });
+
       wavesurfer.on('finish',function(){
         App.trigger('play_next')
       })
@@ -119,6 +154,15 @@
     var trackIndex = null;
     var updateInterval = null
     App.on('select_track',function(index){
+      if (typeof index !== "number") {
+        index = self.tracks.indexOf(index);
+      }
+
+      if (index < 0)
+        index = self.tracks.length - 1
+      if (index >= self.tracks.length)
+        index = 0
+
       trackIndex = index
 
       if (updateInterval)
@@ -153,11 +197,36 @@
         App.trigger('track_pausing')
       }
     })
+
     App.on('play_next',()=>{
       App.trigger('select_track',trackIndex + 1)
     })
+
     App.on('play_prev',()=>{
       App.trigger('select_track',trackIndex - 1)
+    })
+
+    App.on('filter_tracks_by',function(arr){
+      self.allTracks = self.allTracks || self.tracks.slice(); // Copy
+      self.tracks = [];
+
+      self.allTracks.forEach(function(track,index){
+        var str = (track.artist + track.album + track.name).toLowerCase();
+        var found = true;
+        for(var i in arr) {
+          var word = arr[i];
+          if (str.indexOf(word) === -1) {
+            found = false
+            continue;
+          }
+        }
+
+        if (found) {
+          self.tracks.push(track);
+        }
+      })
+
+      fastRender();
     })
 
   </script>
