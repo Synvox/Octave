@@ -43,10 +43,9 @@
       include_docs: true,
       attachments: false
     }).then(function (result) {
-      for(var i in result.rows) {
+      for(var i in result.rows)
         add(result.rows[i].doc)
-      }
-      console.log(self.tracks)
+
       sort();
 
     }).catch(function (err) {
@@ -116,7 +115,7 @@
 
       var targetLength = self.tracks.length,
           start = 0,
-          pageSize = 40,
+          pageSize = 80,
           ms = 50;
 
       function addTracks(){

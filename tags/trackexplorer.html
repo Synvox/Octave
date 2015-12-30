@@ -1,0 +1,71 @@
+<trackexplorer>
+  <img class="artwork">
+  <style type="less">
+    trackexplorer {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      transform: scale(.95);
+      opacity: 0;
+      transform-origin: 100% 100%;
+      transition-duration: .1s;
+      &.show {
+        transform: scale(1);
+        opacity: 1;
+      }
+      .artwork, .metadata {
+        width: 320px;
+        min-height: 240px;
+        background: #f8f8f8;
+        box-shadow: 0 0 1px rgba(0,0,0,0.2),0 0 16px rgba(0,0,0,0.1);
+      }
+      .artwork {
+        background-size: contain;
+      }
+    }
+  </style>
+  <script>
+    var self = this;
+    var $r = $(self.root)
+    var id3 = require('id3js');
+
+    //https://api.spotify.com/v1/search?q=coldplay&type=album
+
+    var previousTrack = null;
+    App.on('selected_track',function(track){
+
+      if (previousTrack && track.album === previousTrack.album) return
+      else previousTrack = track;
+
+      var location = track.location.substring(track.location.indexOf('/Users'))
+      location = unescape(location)
+      var fs = require('fs');
+      var mm = require('musicmetadata');
+
+      // create a new parser from a node ReadStream
+      var parser = mm(fs.createReadStream(location), function (err, result) {
+        if (err) {
+          $r.removeClass('show')
+          return;
+        }
+
+        if (result.picture.length > 0) {
+          var picture = result.picture[0];
+          var url = URL.createObjectURL(new Blob([picture.data], {'type': 'image/' + picture.format}));
+
+          if ($r.find('.artwork').attr('src') === url) return;
+
+          $r.removeClass('show')
+          window.setTimeout(function(){
+            $r.find('.artwork').attr('src',url);
+            window.setTimeout(function(){
+              $r.addClass('show')
+            },150)
+          },300)
+        } else {
+          $r.removeClass('show')
+        }
+      });
+    })
+  </script>
+</trackexplorer>
