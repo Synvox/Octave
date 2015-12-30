@@ -30,51 +30,51 @@ db = new PouchDB('OctaveDB');
 // Track ID: 9667
 // Track Type: "File"
 // Year: 1999
-window.setTimeout(function(){
-  'use strict';
-  var getuser = function() {
-  	var username = require('child_process').execSync( "whoami", { encoding: 'utf8', timeout: 1000 } );
-  	return String(username).trim();
-  }
-  var os = require('os')
-  var xmllocation = "/Users/"+(getuser())+"/Music/iTunes/iTunes Music Library.xml";
-  console.log(xmllocation)
-  var itunesDB = require("itunes-db").loadSync(xmllocation)
-  var tracks = itunesDB.tracks
-
-  db.allDocs({
-    include_docs: true,
-    attachments: false
-  }).then(function (result) {
-    App.initDocs = result;
-
-    for(var i in tracks)
-      if (tracks[i].Name && tracks[i].Location)
-        add(result,tracks[i])
-
-  }).catch(function (err) {
-    console.log(err);
-  });
-
-  function add(docs,track) {
-    for (let i in docs.rows)
-      if (docs.rows[i].doc.location === track.Location)
-        return; // Found and exit.
-
-    db.post({
-      name: track.Name,
-      album: track.Album,
-      artist: track.Artist,
-      location: track.Location,
-      trackNumber: track['Track Number']
-    }).then(function(added){
-      console.log('Added',added)
-    }).catch(function(e){
-      console.log(e)
-    })
-  }
-
-},1000);
+// window.setTimeout(function(){
+//   'use strict';
+//   var getuser = function() {
+//   	var username = require('child_process').execSync( "whoami", { encoding: 'utf8', timeout: 1000 } );
+//   	return String(username).trim();
+//   }
+//   var os = require('os')
+//   var xmllocation = "/Users/"+(getuser())+"/Music/iTunes/iTunes Music Library.xml";
+//   console.log(xmllocation)
+//   var itunesDB = require("itunes-db").loadSync(xmllocation)
+//   var tracks = itunesDB.tracks
+//
+//   db.allDocs({
+//     include_docs: true,
+//     attachments: false
+//   }).then(function (result) {
+//     App.initDocs = result;
+//
+//     for(var i in tracks)
+//       if (tracks[i].Name && tracks[i].Location)
+//         add(result,tracks[i])
+//
+//   }).catch(function (err) {
+//     console.log(err);
+//   });
+//
+//   function add(docs,track) {
+//     for (let i in docs.rows)
+//       if (docs.rows[i].doc.location === track.Location)
+//         return; // Found and exit.
+//
+//     db.post({
+//       name: track.Name,
+//       album: track.Album,
+//       artist: track.Artist,
+//       location: track.Location,
+//       trackNumber: track['Track Number']
+//     }).then(function(added){
+//       console.log('Added',added)
+//     }).catch(function(e){
+//       console.log(e)
+//     })
+//   }
+//
+// },1000);
 
 // var electron = require('electron');
 // var globalShortcut = electron.globalShortcut;

@@ -51,7 +51,7 @@ self.search = function () {
 
   timeout = window.setTimeout(function () {
     App.trigger('filter_tracks_by', query.toLowerCase().split(' '));
-  }, 500);
+  }, 300);
 };
 }, '{ }');
 
@@ -97,7 +97,7 @@ var add = function (doc) {
 
 var sort = function () {
   var get = function (item, key) {
-    if (typeof item[key] === 'number') return item[key];else return item[key] ? ('' + item[key]).trim() : '';
+    if (typeof item[key] === 'number') return item[key];else return (item[key] ? ('' + item[key]).trim() : '').toLowerCase();
   };
 
   self.tracks.sort(function (a, b) {
@@ -124,30 +124,33 @@ var sort = function () {
 };
 
 var fastRenderTimeout = null;
-function fastRender() {
+function fastRender(limit) {
   if (fastRenderTimeout) window.clearTimeout(fastRenderTimeout);
 
   self.renderedTracks = [];
 
   var targetLength = self.tracks.length,
-      page = 0,
-      pageSize = 500,
+      start = 0,
+      pageSize = 10,
       ms = 50;
 
   function addTracks() {
 
-    var end = (page + 1) * pageSize;
+    var end = start + pageSize;
+
     if (end > targetLength) {
       end = targetLength;
-    } else {
+    } else if (!limit || end <= limit) {
       fastRenderTimeout = window.setTimeout(function () {
         addTracks();
       }, ms);
     }
 
-    self.renderedTracks = self.renderedTracks.concat(self.tracks.slice(page * pageSize, end));
+    self.renderedTracks = self.renderedTracks.concat(self.tracks.slice(start, end));
 
-    page++;
+    start += pageSize;
+    pageSize *= 2;
+
     self.update();
   }
 
@@ -244,11 +247,15 @@ App.on('filter_tracks_by', function (arr) {
     }
   });
 
-  fastRender();
+  fastRender(100);
+
+  $(window).one('scroll', function () {
+    fastRender();
+  });
 });
 }, '{ }');
 
-riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track:hover{color:black;background:rgba(0,0,0,0.1)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
 var self = this;
 self.data = self.opts.data;
 self.index = self.opts.index;

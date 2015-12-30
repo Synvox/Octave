@@ -73,7 +73,7 @@
         if (typeof item[key] === 'number')
           return item[key];
         else
-          return (item[key]) ? ('' + item[key]).trim() : '';
+          return ((item[key]) ? ('' + item[key]).trim() : '').toLowerCase();
       }
 
       self.tracks.sort(function(a, b){
@@ -101,32 +101,35 @@
     }
 
     var fastRenderTimeout = null;
-    function fastRender(){
+    function fastRender(limit){
       if (fastRenderTimeout)
         window.clearTimeout(fastRenderTimeout);
 
       self.renderedTracks = [];
 
       var targetLength = self.tracks.length,
-          page = 0,
-          pageSize = 500,
+          start = 0,
+          pageSize = 10,
           ms = 50;
 
       function addTracks(){
 
-        var end = (page+1)*pageSize;
+        var end = start + pageSize;
+
         if (end > targetLength) {
           end = targetLength
-        } else {
+        } else if (!limit || end <= limit) {
           fastRenderTimeout = window.setTimeout(function(){
-            addTracks();
-          },ms);
+            addTracks()
+          },ms)
         }
 
-        self.renderedTracks = self.renderedTracks.concat(self.tracks.slice(page*pageSize, end))
+        self.renderedTracks = self.renderedTracks.concat(self.tracks.slice(start, end))
 
-        page++;
-        self.update();
+        start += pageSize
+        pageSize *= 2
+
+        self.update()
       }
 
       addTracks();
@@ -226,7 +229,11 @@
         }
       })
 
-      fastRender();
+      fastRender(100);
+
+      $(window).one('scroll',function(){
+        fastRender();
+      });
     })
 
   </script>
