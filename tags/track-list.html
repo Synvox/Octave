@@ -10,6 +10,12 @@
     display: block;
     width: 100%;
     white-space: nowrap;
+    position: absolute;
+    top: 110px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow: auto;
     .cell {
       padding: 8px;
       display: inline-block;
@@ -28,6 +34,7 @@
   </style>
   <script>
     var self = this
+    var $r = $(self.root)
 
     self.tracks = [];
     self.renderedTracks = [];
@@ -109,7 +116,7 @@
 
       var targetLength = self.tracks.length,
           start = 0,
-          pageSize = 10,
+          pageSize = 40,
           ms = 50;
 
       function addTracks(){
@@ -248,7 +255,7 @@
 
       fastRender(100);
 
-      $(window).one('scroll',function(){
+      $r.one('scroll',function(){
         fastRender();
       });
     })

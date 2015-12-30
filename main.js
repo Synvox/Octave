@@ -27,7 +27,8 @@ app.on('ready', function() {
     width: 800,
     height: 600,
     titleBarStyle: 'hidden',
-    title: 'Octave'
+    title: 'Octave',
+    overlayScrollbars: true
   });
 
   mainWindow.webContents.on('did-finish-load', function() {
