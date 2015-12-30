@@ -1,13 +1,13 @@
 <crumbs>
 
   <ul if={ data }>
-    <li>Library</li>
+    <li onclick={ reset }>Library</li>
     <li class="chevron">›</li>
-    <li if={ data.artist }>{data.artist}</li>
+    <li if={ data.artist } onclick={ search } name="artist">{data.artist}</li>
     <li class="chevron" if={ data.artist }>›</li>
-    <li if={ data.album }>{data.album}</li>
+    <li if={ data.album } onclick={ search } name="album">{data.album}</li>
     <li class="chevron" if={ data.album }>›</li>
-    <li>{data.name}</li>
+    <li onclick={ search } name="name">{data.name}</li>
   </ul>
 
   <style type="less">
@@ -19,7 +19,7 @@
       ul {
         height: 40px;
         font-size: 16px;
-        color: white;
+        color: #ddd;
         line-height: 30px;
         position: absolute;
         bottom: 0px;
@@ -27,11 +27,15 @@
         -webkit-user-select: none;
         li {
           display: inline-block;
+          cursor: pointer;
           &.chevron {
             font-size: 2.5em;
             position: relative;
             top: 6px;
             opacity: .5;
+          }
+          &:hover {
+            color: #fff
           }
         }
       }
@@ -45,6 +49,16 @@
     App.on('selected_track',function(data){
       self.update({data: data});
     })
+
+    self.search = function(e){
+      var query = $(e.target).text()
+      var field = $(e.target).attr('name')
+      App.trigger('filter_tracks_by',field+':'+query)
+    }
+
+    self.reset = function(e){
+      App.trigger('filter_tracks_by','')
+    }
 
   </script>
 

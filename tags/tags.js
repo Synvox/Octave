@@ -9,7 +9,7 @@ riot.tag2('cell', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.cell);
 });
 
-riot.tag2('crumbs', '<ul if="{data}"> <li>Library</li> <li class="chevron">›</li> <li if="{data.artist}">{data.artist}</li> <li class="chevron" if="{data.artist}">›</li> <li if="{data.album}">{data.album}</li> <li class="chevron" if="{data.album}">›</li> <li>{data.name}</li> </ul>', 'body{background:#202020}crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:white;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}', '', function(opts) {
+riot.tag2('crumbs', '<ul if="{data}"> <li onclick="{reset}">Library</li> <li class="chevron">›</li> <li if="{data.artist}" onclick="{search}" name="artist">{data.artist}</li> <li class="chevron" if="{data.artist}">›</li> <li if="{data.album}" onclick="{search}" name="album">{data.album}</li> <li class="chevron" if="{data.album}">›</li> <li onclick="{search}" name="name">{data.name}</li> </ul>', 'body{background:#202020}crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:#ddd;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block;cursor:pointer}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}crumbs ul li:hover{color:#fff}', '', function(opts) {
 
 var self = this;
 self.data = null;
@@ -17,6 +17,16 @@ self.data = null;
 App.on('selected_track', function (data) {
   self.update({ data: data });
 });
+
+self.search = function (e) {
+  var query = $(e.target).text();
+  var field = $(e.target).attr('name');
+  App.trigger('filter_tracks_by', field + ':' + query);
+};
+
+self.reset = function (e) {
+  App.trigger('filter_tracks_by', '');
+};
 }, '{ }');
 
 riot.tag2('panel', '<yield></yield>', '', '', function(opts) {
@@ -50,9 +60,17 @@ self.search = function () {
   if (timeout) window.clearTimeout(timeout);
 
   timeout = window.setTimeout(function () {
-    App.trigger('filter_tracks_by', query.toLowerCase().split(' '));
-  }, 300);
+    App.trigger('filter_tracks_by', query);
+  }, 100);
 };
+
+App.on('filter_tracks_by', function (query) {
+  var input = $(self.root).find('input.query');
+
+  if (!input.is(":focus")) {
+    input.val(query);
+  }
+});
 }, '{ }');
 
 riot.tag2('track-list', '<track each="{val, i in renderedTracks}" index="{i}" data="{val}"></track>', 'track-list{color:#333;background:white;display:block;width:100%;white-space:nowrap}track-list .cell{padding:8px;display:inline-block;float:left}track-list .cell:nth-child(1){width:30vw}track-list .cell:nth-child(2){width:20vw}', '', function(opts) {
@@ -227,12 +245,27 @@ App.on('play_prev', () => {
   App.trigger('select_track', trackIndex - 1);
 });
 
-App.on('filter_tracks_by', function (arr) {
+App.on('filter_tracks_by', function (str) {
+  var cols = str.split(':'),
+      col,
+      arr;
+  if (cols.length === 2) {
+    arr = cols[1].toLowerCase().split(' ');
+    col = cols[0];
+  } else {
+    arr = str.toLowerCase().split(' ');
+    cols = ['artist', 'album', 'name'];
+  }
+
   self.allTracks = self.allTracks || self.tracks.slice(); // Copy
   self.tracks = [];
 
   self.allTracks.forEach(function (track, index) {
-    var str = (track.artist + track.album + track.name).toLowerCase();
+    var str = '';
+    for (var i in cols) if (cols[i]) str += track[cols[i]];
+
+    var str = str.toLowerCase();
+
     var found = true;
     for (var i in arr) {
       var word = arr[i];
@@ -255,7 +288,7 @@ App.on('filter_tracks_by', function (arr) {
 });
 }, '{ }');
 
-riot.tag2('track', '<div class="cell">{data.artist}</div> <div class="cell">{data.album}</div> <div class="cell">{data.name}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%}track:nth-child(even){background:rgba(0,0,0,0.01)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%;font-size:14px}track:nth-child(even){background:rgba(0,0,0,0.01)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
 var self = this;
 self.data = self.opts.data;
 self.index = self.opts.index;

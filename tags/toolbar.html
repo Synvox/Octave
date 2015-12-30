@@ -142,8 +142,16 @@
         window.clearTimeout(timeout)
 
       timeout = window.setTimeout(function(){
-        App.trigger('filter_tracks_by',query.toLowerCase().split(' '))
-      },300)
+        App.trigger('filter_tracks_by',query)
+      },100)
     }
+
+    App.on('filter_tracks_by',function(query){
+      var input = $(self.root).find('input.query')
+
+      if (!input.is(":focus")) {
+        input.val(query);
+      }
+    })
   </script>
 </toolbar>

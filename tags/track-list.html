@@ -209,12 +209,29 @@
       App.trigger('select_track',trackIndex - 1)
     })
 
-    App.on('filter_tracks_by',function(arr){
+    App.on('filter_tracks_by',function(str){
+      var cols = str.split(':'),
+          col, arr
+      if (cols.length === 2){
+        arr = cols[1].toLowerCase().split(' ');
+        col = cols[0]
+      } else {
+        arr = str.toLowerCase().split(' ');
+        cols = ['artist','album','name']
+      }
+
       self.allTracks = self.allTracks || self.tracks.slice(); // Copy
       self.tracks = [];
 
       self.allTracks.forEach(function(track,index){
-        var str = (track.artist + track.album + track.name).toLowerCase();
+        var str = ''
+        for(var i in cols)
+          if (cols[i])
+            str += track[cols[i]]
+
+
+        var str = str.toLowerCase();
+
         var found = true;
         for(var i in arr) {
           var word = arr[i];
