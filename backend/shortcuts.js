@@ -1,9 +1,10 @@
-const ipcMain = require('electron').ipcMain;
+var ipcMain = require('electron').ipcMain;
+var globalShortcut = require('global-shortcut');
 
-module.exports = function(contents){
-  var globalShortcut = require('global-shortcut');
+module.exports.start = function(contents){
+  // Clean Slate
+  globalShortcut.unregisterAll();
 
-  // Register a 'ctrl+x' shortcut listener.
   var ret = globalShortcut.register('MediaPlayPause', function() {
     contents.send('trigger', 'play_pause');
   })
@@ -15,4 +16,7 @@ module.exports = function(contents){
   })
   if (!ret)
     console.log('registerion fails');
+}
+module.exports.stop = function(){
+  globalShortcut.unregisterAll();
 }
