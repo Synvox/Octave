@@ -15,9 +15,12 @@
     <div class="center" id="waveform">
     </div>
     <div class="right">
-      <form onsubmit={ search }>
+      <form onsubmit={ search } class="search">
         <input type="submit" hidden>
         <input onkeyup={ search } class="query">
+        <svg style="width:24px;height:24px" viewBox="0 0 24 24" class="exit" if={ hasQuery } onclick={ resetSearch }>
+          <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z" />
+        </svg>
       </form>
     </div>
   </div>
@@ -99,17 +102,36 @@
         z-index: 10;
         box-shadow: 0px 0px 2px rgba(0,0,0,.3),
                     0px 0px 16px rgba(0,0,0,.1);
-        input {
+        form.search {
           border: 1px solid #ccc;
           border-radius: 3px;
           position: absolute;
           top: 10px;
           right: 10px;
+          bottom: 10px;
           height: 30px;
           width: calc(100% - 10px);
-          padding: 0px 8px;
-          &:focus {
-            outline: none;
+
+          input.query {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            bottom: 0px;
+            border: none;
+            padding: 0px 12px;
+            width: ~"calc(100% - 30px)";
+            &:focus {
+              outline: none;
+            }
+          }
+          .exit {
+            position: absolute;
+            right: 2px;
+            top: 2px;
+            bottom: 0;
+            path {
+              fill: #444;
+            }
           }
         }
       }
@@ -147,12 +169,20 @@
       },100)
     }
 
+    self.resetSearch = function(){
+      App.trigger('filter_tracks_by','')
+    }
+
+    self.hasQuery = false;
     App.on('filter_tracks_by',function(query){
       var input = $(self.root).find('input.query')
 
       if (!input.is(":focus")) {
         input.val(query);
       }
+
+      self.hasQuery = !!(query.length);
+      self.update();
     })
   </script>
 </toolbar>
