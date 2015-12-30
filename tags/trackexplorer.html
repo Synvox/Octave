@@ -1,26 +1,55 @@
 <trackexplorer>
-  <img class="artwork">
+  <img class="artwork" if={artUrl} src={ artUrl }>
+  <div if={ data } class="metadata">
+    <h1 contenteditable>{ name }</h1>
+    <h2 contenteditable>{ album }</h2>
+    <h2 contenteditable>{ artist }</h2>
+  </div>
+
   <style type="less">
     trackexplorer {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      transform: scale(.95);
-      opacity: 0;
-      transform-origin: 100% 100%;
+      top: 110px;
+      bottom: 0px;
+      right: 0px;
+      width: 25vw;
+      z-index: 11;
       transition-duration: .1s;
+      background: #fff;
+      box-shadow: -1px 0px 0px #ccc;
+      transform: translateX(100%);
+      opacity: 0;
       &.show {
-        transform: scale(1);
+        transform: translate(0%);
         opacity: 1;
       }
-      .artwork, .metadata {
-        width: 320px;
-        min-height: 240px;
-        background: #f8f8f8;
-        box-shadow: 0 0 1px rgba(0,0,0,0.2),0 0 16px rgba(0,0,0,0.1);
-      }
       .artwork {
+        width: ~"calc(100% - 40px)";
+        margin: 20px;
         background-size: contain;
+      }
+      .metadata {
+        padding: 0px 20px;
+        h1 {
+          font-size: 1.5em;
+        }
+        h1,h2 {
+          padding: 4px 8px;
+          border: none;
+          width: 100%;
+          margin-bottom: 4px;
+          &:hover {
+            background: #f8f8f8;
+          }
+          &:focus {
+            background: #f8f8f8;
+            outline: none;
+          }
+        }
+        input.name {
+          font-size: 18px;
+          font-weight: bold;
+        }
       }
     }
   </style>
@@ -28,14 +57,17 @@
     var self = this;
     var $r = $(self.root)
     var id3 = require('id3js');
+    self.artUrl = ""
 
     //https://api.spotify.com/v1/search?q=coldplay&type=album
 
     var previousTrack = null;
     App.on('selected_track',function(track){
-
-      if (previousTrack && track.album === previousTrack.album) return
-      else previousTrack = track;
+      self.data = track;
+      self.name = track.name
+      self.artist = track.artist
+      self.album = track.album
+      self.update();
 
       var location = track.location.substring(track.location.indexOf('/Users'))
       location = unescape(location)
@@ -44,26 +76,14 @@
 
       // create a new parser from a node ReadStream
       var parser = mm(fs.createReadStream(location), function (err, result) {
-        if (err) {
-          $r.removeClass('show')
-          return;
-        }
+        $r.addClass('show')
 
         if (result.picture.length > 0) {
           var picture = result.picture[0];
           var url = URL.createObjectURL(new Blob([picture.data], {'type': 'image/' + picture.format}));
-
-          if ($r.find('.artwork').attr('src') === url) return;
-
-          $r.removeClass('show')
-          window.setTimeout(function(){
-            $r.find('.artwork').attr('src',url);
-            window.setTimeout(function(){
-              $r.addClass('show')
-            },150)
-          },300)
+          self.update({artUrl: url})
         } else {
-          $r.removeClass('show')
+          self.update({artUrl: ''})
         }
       });
     })

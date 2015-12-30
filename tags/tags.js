@@ -33,7 +33,7 @@ riot.tag2('panel', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.panel);
 });
 
-riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center" id="waveform"> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{search}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center canvas{width:100%}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(90%)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
+riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center" id="waveform"> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{search}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center canvas{width:100%}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(100% - 22px)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
 var self = this;
 self.playing = false;
 
@@ -334,17 +334,21 @@ self.playPause = () => {
 };
 }, '{ }');
 
-riot.tag2('trackexplorer', '<img class="artwork">', 'trackexplorer{position:absolute;bottom:20px;right:20px;transform:scale(.95);opacity:0;transform-origin:100% 100%;transition-duration:.1s}trackexplorer.show{transform:scale(1);opacity:1}trackexplorer .artwork,trackexplorer .metadata{width:320px;min-height:240px;background:#f8f8f8;box-shadow:0 0 1px rgba(0,0,0,0.2),0 0 16px rgba(0,0,0,0.1)}trackexplorer .artwork{background-size:contain}', '', function(opts) {
+riot.tag2('trackexplorer', '<img class="artwork" if="{artUrl}" riot-src="{artUrl}"> <div if="{data}" class="metadata"> <h1 contenteditable>{name}</h1> <h2 contenteditable>{album}</h2> <h2 contenteditable>{artist}</h2> </div>', 'trackexplorer{position:absolute;top:110px;bottom:0;right:0;width:25vw;z-index:11;transition-duration:.1s;background:#fff;box-shadow:-1px 0 0 #ccc;transform:translateX(100%);opacity:0}trackexplorer.show{transform:translate(0);opacity:1}trackexplorer .artwork{width:calc(100% - 40px);margin:20px;background-size:contain}trackexplorer .metadata{padding:0 20px}trackexplorer .metadata h1{font-size:1.5em}trackexplorer .metadata h1,trackexplorer .metadata h2{padding:4px 8px;border:none;width:100%;margin-bottom:4px}trackexplorer .metadata h1:hover,trackexplorer .metadata h2:hover{background:#f8f8f8}trackexplorer .metadata h1:focus,trackexplorer .metadata h2:focus{background:#f8f8f8;outline:none}trackexplorer .metadata input.name{font-size:18px;font-weight:bold}', '', function(opts) {
 var self = this;
 var $r = $(self.root);
 var id3 = require('id3js');
+self.artUrl = "";
 
 //https://api.spotify.com/v1/search?q=coldplay&type=album
 
 var previousTrack = null;
 App.on('selected_track', function (track) {
-
-  if (previousTrack && track.album === previousTrack.album) return;else previousTrack = track;
+  self.data = track;
+  self.name = track.name;
+  self.artist = track.artist;
+  self.album = track.album;
+  self.update();
 
   var location = track.location.substring(track.location.indexOf('/Users'));
   location = unescape(location);
@@ -353,27 +357,15 @@ App.on('selected_track', function (track) {
 
   // create a new parser from a node ReadStream
   var parser = mm(fs.createReadStream(location), function (err, result) {
-    if (err) {
-      $r.removeClass('show');
-      return;
-    }
+    $r.addClass('show');
 
     if (result.picture.length > 0) {
       var picture = result.picture[0];
       var url = URL.createObjectURL(new Blob([picture.data], { 'type': 'image/' + picture.format }));
-
-      if ($r.find('.artwork').attr('src') === url) return;
-
-      $r.removeClass('show');
-      window.setTimeout(function () {
-        $r.find('.artwork').attr('src', url);
-        window.setTimeout(function () {
-          $r.addClass('show');
-        }, 150);
-      }, 300);
+      self.update({ artUrl: url });
     } else {
-      $r.removeClass('show');
+      self.update({ artUrl: '' });
     }
   });
 });
-});
+}, '{ }');
