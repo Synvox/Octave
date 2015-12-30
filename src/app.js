@@ -65,7 +65,8 @@ window.setTimeout(function(){
       name: track.Name,
       album: track.Album,
       artist: track.Artist,
-      location: track.Location
+      location: track.Location,
+      trackNumber: track['Track Number']
     }).then(function(added){
       console.log('Added',added)
     }).catch(function(e){

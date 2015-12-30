@@ -81,10 +81,27 @@ var changes = db.changes({
 var add = function (doc) {
   self.tracks.push(doc);
 };
+
 var sort = function () {
+  var get = function (item, key) {
+    if (typeof item[key] === 'number') return item[key];else return item[key] ? ('' + item[key]).trim() : '';
+  };
+
   self.tracks.sort(function (a, b) {
-    var keyA = a.album ? a.album.trim() : '',
-        keyB = b.album ? b.album.trim() : '';
+    var keyA, keyB;
+    keyA = get(a, 'artist') + get(a, 'album'), keyB = get(b, 'artist') + get(b, 'album');
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+
+    // Numeric
+    var numA, numB;
+    numA = get(a, 'trackNumber');
+    numB = get(b, 'trackNumber');
+    if (numA < numB) return -1;
+    if (numA > numB) return 1;
+
+    keyA = get(a, 'name');
+    keyB = get(b, 'name');
     if (keyA < keyB) return -1;
     if (keyA > keyB) return 1;
     return 0;
@@ -98,7 +115,6 @@ self.on('mount', function () {
   wavesurfer.init({
     container: '#waveform',
     height: 50,
-    barWidth: .5,
     progressColor: "#704FDC"
   });
   wavesurfer.on('ready', function () {

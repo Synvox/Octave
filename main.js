@@ -23,7 +23,12 @@ app.on('window-all-closed', function() {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, titleBarStyle: 'hidden'});
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    titleBarStyle: 'hidden',
+    title: 'Octave'
+  });
 
   mainWindow.webContents.on('did-finish-load', function() {
     shortcuts.start(mainWindow.webContents);
