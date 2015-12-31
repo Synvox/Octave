@@ -454,6 +454,8 @@ App.on('select_track', function (index) {
     }
   }
 
+  index = parseInt(index);
+
   if (index < 0) index = self.tracks.length - 1;
   if (index >= self.tracks.length) index = 0;
 
@@ -481,11 +483,12 @@ App.on('play_pause', () => {
 });
 
 App.on('play_next', () => {
-  App.trigger('select_track', trackIndex + 1);
+  App.trigger('select_track', parseInt(trackIndex) + 1);
 });
 
 App.on('play_prev', () => {
-  App.trigger('select_track', trackIndex - 1);
+  console.log(trackIndex - 1);
+  App.trigger('select_track', parseInt(trackIndex) - 1);
 });
 
 App.on('filter_tracks_by', function (query) {
