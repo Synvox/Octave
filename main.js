@@ -34,8 +34,6 @@ app.on('ready', function() {
   mainWindow.webContents.on('did-finish-load', function() {
     shortcuts.start(mainWindow.webContents);
   });
-  
-  mainWindow.webContents.openDevTools();
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
