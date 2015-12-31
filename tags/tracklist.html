@@ -69,16 +69,22 @@
       if (index !== -1) {
         // Change
         self.tracks[index] = change.doc;
+        if (changeDebounce)
+          window.clearTimeout(changeDebounce)
+
+        changeDebounce = window.setTimeout(function(){
+          sort(true)
+        },2000)
       } else {
         // Add
         add(change.doc);
-      }
-      if (changeDebounce)
-        window.clearTimeout(changeDebounce)
+        if (changeDebounce)
+          window.clearTimeout(changeDebounce)
 
-      changeDebounce = window.setTimeout(function(){
-        sort(true); // true = rerun last limit
-      },500)
+        changeDebounce = window.setTimeout(function(){
+          sort(true); // true = rerun last limit
+        },200)
+      }
 
     }).on('complete', function(info) {
       // changes() was canceled
@@ -91,17 +97,28 @@
     }
 
     var sort = function(limit){
+      var expression = /[A-Za-z ]+/g;
       var get = function(item,key){
         if (typeof item[key] === 'number')
           return item[key];
-        else
-          return ((item[key]) ? ('' + item[key]).trim() : '').toLowerCase();
+        else{
+          var returned = expression.exec(((item[key]) ? ('' + item[key]).trim() : '').toLowerCase());
+          if (returned === null)
+            return ''
+          else
+            return returned[0]
+        }
       }
 
       self.tracks.sort(function(a, b){
         var keyA, keyB;
-        keyA = get(a,'artist')+get(a,'album'),
+
+        keyA = get(a,'artist')+get(a,'album')
         keyB = get(b,'artist')+get(b,'album')
+
+        if (keyA.length === 0) return 1;
+        if (keyB.length === 0) return -1;
+
         if(keyA < keyB) return -1
         if(keyA > keyB) return 1
 
