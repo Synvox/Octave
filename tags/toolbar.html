@@ -206,6 +206,8 @@
     self.search =  function(){
       var query = $(self.root).find('input.query').val()
 
+      if (query.length < 3) return;
+
       if (timeout)
         window.clearTimeout(timeout)
 
