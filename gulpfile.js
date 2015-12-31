@@ -28,3 +28,19 @@ gulp.task('riot', function() {
       .pipe(gulp.dest('tags'));
   });
 });
+
+gulp.task('build',function(){
+  var opts = {
+    version: '0.36.2',
+    name: 'Octave',
+    arch: 'x64',
+    platform: 'darwin',
+    dir: '.',
+    out: './bundle/',
+    overwrite: true
+  };
+  var packager = require('electron-packager')
+  packager(opts, function done (err, appPath) {
+    console.log(err, appPath)
+  })
+})

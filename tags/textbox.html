@@ -1,0 +1,37 @@
+<textbox>
+  <yield/>
+  <input name={opts.name} placeholder={opts.placeholder} type={opts.type}>
+  <style type="less">
+    textbox {
+      background: #f8f8f8;
+      border: none;
+      display: inline-block;
+      input {
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        padding: 0px 16px;
+        border: none;
+        box-shadow: 0px 0px 0px 1px rgba(0,0,0,.02) inset;
+        font-size: 14px;
+        &:focus {
+          outline: none;
+          background: rgba(0,0,0,.02);
+        }
+      }
+      &[error]:before {
+        content: attr(error);
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        background: white;
+        padding: 2px 16px;
+        box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.38);
+        color: red;
+      }
+    }
+  </style>
+  <script>
+    this.mixin(Power.cell);
+  </script>
+</textbox>

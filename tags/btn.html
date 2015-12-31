@@ -1,0 +1,66 @@
+<btn>
+  <button><yield/></button>
+  <style type="less">
+    btn {
+      @color: #4946E6;
+      //@color: #f50;
+      text-align: center;
+      background: @color;
+      border: none;
+      color: white;
+      border-radius: 1px;
+      opacity: 1;
+      transition-duration: .5s;
+      cursor: pointer;
+      box-shadow: 0px 0px 0px 1px rgba(0,0,0,.2) inset;
+      button {
+        border-radius: 3px;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: none;
+        color: inherit;
+        font-size: 14px;
+        &:focus {
+          outline: none;
+          box-shadow: 0px 0px 0px 2px rgba(0,0,0,.4) inset;
+          text-shadow: 0px 1px 1px darken(@color,30%);
+        }
+        transition-duration: .5s;
+        &:hover {
+          background: rgba(255,255,255,.1)
+        }
+        &:active {
+          transition-duration: 0s;
+          background: rgba(0,0,0,.3);
+        }
+      }
+      &.fade {
+        transition-duration: .5s;
+        opacity: 0;
+      }
+      &[type="clear"] {
+        background: transparent;
+        color: #333;
+        box-shadow: none;
+        &:active {
+          transition-duration: 0s;
+          background: rgba(0,0,0,.1);
+          button {
+            background: transparent;
+          }
+        }
+        &:hover button {
+          background: rgba(0,0,0,.2)
+        }
+        button:focus {
+          box-shadow: none;
+          text-shadow: none;
+        }
+      }
+    }
+  </style>
+  <script>
+    this.mixin(Power.cell);
+  </script>
+</btn>

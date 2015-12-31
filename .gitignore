@@ -3,8 +3,11 @@ logs
 *.log
 npm-debug.log*
 
-#Database
+# Database
 OctaveDB
+
+# Bundled application
+bundle
 
 # Runtime data
 pids
