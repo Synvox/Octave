@@ -320,11 +320,10 @@ var add = function (doc) {
 };
 
 var sort = function (limit) {
-  var expression = /[A-Za-z ]+/g;
   var get = function (item, key) {
     if (typeof item[key] === 'number') return item[key];else {
-      var returned = expression.exec((item[key] ? ('' + item[key]).trim() : '').toLowerCase());
-      if (returned === null) return '';else return returned[0];
+      var str = (item[key] ? ('' + item[key]).trim() : '').toLowerCase();
+      return str.substring(str.search(/[a-z]/i));
     }
   };
 

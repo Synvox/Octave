@@ -97,24 +97,21 @@
     }
 
     var sort = function(limit){
-      var expression = /[A-Za-z ]+/g;
       var get = function(item,key){
         if (typeof item[key] === 'number')
           return item[key];
-        else{
-          var returned = expression.exec(((item[key]) ? ('' + item[key]).trim() : '').toLowerCase());
-          if (returned === null)
-            return ''
-          else
-            return returned[0]
+        else {
+          var str = ((item[key]) ? ('' + item[key]).trim() : '').toLowerCase();
+          return str.substring(str.search(/[a-z]/i))
         }
+
       }
 
       self.tracks.sort(function(a, b){
         var keyA, keyB;
 
-        keyA = get(a,'artist')+get(a,'album')
-        keyB = get(b,'artist')+get(b,'album')
+        keyA = get(a,'artist') + get(a,'album')
+        keyB = get(b,'artist') + get(b,'album')
 
         if (keyA.length === 0) return 1;
         if (keyB.length === 0) return -1;
