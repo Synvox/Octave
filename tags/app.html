@@ -35,7 +35,6 @@
       include_docs: false,
       attachments: false
     }).then(function(e){
-      console.log(e,e.total_rows === 0)
       if (e.total_rows === 0) {
         self.update({blank: true})
       }

@@ -9,7 +9,6 @@ db.allDocs({
   include_docs: false,
   attachments: false
 }).then(function (e) {
-  console.log(e, e.total_rows === 0);
   if (e.total_rows === 0) {
     self.update({ blank: true });
   }
@@ -96,7 +95,7 @@ riot.tag2('textbox', '<yield></yield> <input name="{opts.name}" placeholder="{op
 this.mixin(Power.cell);
 }, '{ }');
 
-riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center"> <span class="time-left">{time.left}</span> <span class="time-right">{time.right}</span> <div id="waveform"></div> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{search}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center #waveform{position:absolute;left:0;right:0;bottom:0;top:0}toolbar .center canvas{width:100%}toolbar .center .time-left{position:absolute;left:0px top: 8px}toolbar .center .time-right{position:absolute;right:0px top: 8px}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(100% - 22px)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
+riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center"> <span class="time-left">{time.left}</span> <span class="time-right">{time.right}</span> <div id="waveform"></div> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{typeSearch}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center #waveform{position:absolute;left:0;right:0;bottom:0;top:0}toolbar .center canvas{width:100%}toolbar .center .time-left{position:absolute;left:0px top: 8px}toolbar .center .time-right{position:absolute;right:0px top: 8px}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(100% - 22px)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
 var self = this;
 self.playing = false;
 
@@ -138,10 +137,17 @@ App.on('track_pausing', function () {
 // })
 
 var timeout = null;
-self.search = function () {
+self.typeSearch = function () {
+  var query = $(self.root).find('input.query').val();
+  if (query.length > 5) self.search(true);
+};
+self.search = function (now) {
   var query = $(self.root).find('input.query').val();
 
-  if (query.length < 3) return;
+  if (now) {
+    App.trigger('filter_tracks_by', query);
+    return;
+  }
 
   if (timeout) window.clearTimeout(timeout);
 
@@ -184,15 +190,27 @@ self.select = () => {
 $r.click(self.select);
 
 App.on('selected_track', function (data) {
-  if (data !== self.data) return;
+  if (data._id !== self.data._id) return;
 
   self.active = true;
   $r.addClass('active');
+
+  var changes = db.changes({
+    since: 'now',
+    live: true,
+    include_docs: true
+  }).on('change', function (change) {
+    var doc = change.doc;
+    if (doc._id === self.data._id) {
+      self.update({ data: change.doc });
+    }
+  });
 
   App.one('select_track', function () {
     self.active = false;
     $r.removeClass('active');
     self.update();
+    changes.cancel();
   });
 
   self.update();
@@ -295,11 +313,7 @@ var changes = db.changes({
   if (index !== -1) {
     // Change
     self.tracks[index] = change.doc;
-    if (changeDebounce) window.clearTimeout(changeDebounce);
-
-    changeDebounce = window.setTimeout(function () {
-      sort(true);
-    }, 2000);
+    console.log("setting", index, 'to', change.doc);
   } else {
     // Add
     add(change.doc);
@@ -330,8 +344,17 @@ var sort = function (limit) {
   self.tracks.sort(function (a, b) {
     var keyA, keyB;
 
-    keyA = get(a, 'artist') + get(a, 'album');
-    keyB = get(b, 'artist') + get(b, 'album');
+    keyA = get(a, 'artist');
+    keyB = get(b, 'artist');
+
+    if (keyA.length === 0) return 1;
+    if (keyB.length === 0) return -1;
+
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+
+    keyA = get(a, 'album');
+    keyB = get(b, 'album');
 
     if (keyA.length === 0) return 1;
     if (keyB.length === 0) return -1;
@@ -419,27 +442,31 @@ self.on('mount', function () {
 self.track = null;
 var trackIndex = null;
 App.on('select_track', function (index) {
-  try {
-    if (typeof index !== "number") {
-      index = self.tracks.indexOf(index);
+  if (typeof index !== "number") {
+
+    var doc = index;
+    index = -1;
+    for (var i in self.tracks) {
+      if (self.tracks[i]._id === doc._id) {
+        index = i;
+        continue;
+      }
     }
-
-    if (index < 0) index = self.tracks.length - 1;
-    if (index >= self.tracks.length) index = 0;
-
-    trackIndex = index;
-
-    if (!wavesurfer.isPlaying()) wavesurfer.pause();
-
-    var newData = self.tracks[trackIndex];
-
-    App.trigger('selected_track', newData);
-    self.track = newData;
-
-    wavesurfer.load(newData.location);
-  } catch (e) {
-    console.error(e);
   }
+
+  if (index < 0) index = self.tracks.length - 1;
+  if (index >= self.tracks.length) index = 0;
+
+  trackIndex = index;
+
+  if (!wavesurfer.isPlaying()) wavesurfer.pause();
+
+  var newData = self.tracks[trackIndex];
+
+  App.trigger('selected_track', newData);
+  self.track = newData;
+
+  wavesurfer.load(newData.location);
 });
 
 App.on('play_pause', () => {
@@ -461,15 +488,19 @@ App.on('play_prev', () => {
   App.trigger('select_track', trackIndex - 1);
 });
 
-App.on('filter_tracks_by', function (str) {
-  var cols = str.split(':'),
-      col,
-      arr;
+App.on('filter_tracks_by', function (query) {
+  var cols = query.split(':'),
+      arr,
+      exact = false,
+      field;
+
   if (cols.length === 2) {
-    arr = cols[1].toLowerCase().split(' ');
-    col = cols[0];
+    query = cols[1].trim().toLowerCase();
+    field = cols[0];
+    console.log(query, field);
+    exact = true;
   } else {
-    arr = str.toLowerCase().split(' ');
+    arr = query.toLowerCase().split(' ');
     cols = ['artist', 'album', 'name'];
   }
 
@@ -478,21 +509,29 @@ App.on('filter_tracks_by', function (str) {
 
   self.allTracks.forEach(function (track, index) {
     var str = '';
-    for (var i in cols) if (cols[i]) str += track[cols[i]];
+    if (exact) {
+      if (!track[field]) return;
 
-    var str = str.toLowerCase();
+      var value = track[field].toLowerCase().trim();
+      if (value === query) self.tracks.push(track);
+    } else {
+      for (var i in cols) if (cols[i]) str += track[cols[i]];
 
-    var found = true;
-    for (var i in arr) {
-      var word = arr[i];
-      if (str.indexOf(word) === -1) {
-        found = false;
-        continue;
+      str = str.toLowerCase().trim();
+
+      var found = true;
+      for (var i in arr) {
+        var word = arr[i].trim();
+
+        if (str.indexOf(word) === -1) {
+          found = false;
+          continue;
+        }
       }
-    }
 
-    if (found) {
-      self.tracks.push(track);
+      if (found) {
+        self.tracks.push(track);
+      }
     }
   });
 

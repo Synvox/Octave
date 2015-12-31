@@ -69,12 +69,7 @@
       if (index !== -1) {
         // Change
         self.tracks[index] = change.doc;
-        if (changeDebounce)
-          window.clearTimeout(changeDebounce)
-
-        changeDebounce = window.setTimeout(function(){
-          sort(true)
-        },2000)
+        console.log("setting", index,'to',change.doc)
       } else {
         // Add
         add(change.doc);
@@ -110,8 +105,17 @@
       self.tracks.sort(function(a, b){
         var keyA, keyB;
 
-        keyA = get(a,'artist') + get(a,'album')
-        keyB = get(b,'artist') + get(b,'album')
+        keyA = get(a,'artist')
+        keyB = get(b,'artist')
+
+        if (keyA.length === 0) return 1;
+        if (keyB.length === 0) return -1;
+
+        if(keyA < keyB) return -1
+        if(keyA > keyB) return 1
+
+        keyA = get(a,'album')
+        keyB = get(b,'album')
 
         if (keyA.length === 0) return 1;
         if (keyB.length === 0) return -1;
@@ -199,9 +203,16 @@
     self.track = null
     var trackIndex = null;
     App.on('select_track',function(index){
-      try {
       if (typeof index !== "number") {
-        index = self.tracks.indexOf(index);
+
+        var doc = index
+        index = -1
+        for(var i in self.tracks) {
+          if (self.tracks[i]._id === doc._id) {
+            index = i
+            continue
+          }
+        }
       }
 
       if (index < 0)
@@ -220,9 +231,6 @@
       self.track = newData;
 
       wavesurfer.load(newData.location);
-      } catch (e) {
-        console.error(e)
-      }
     })
 
     App.on('play_pause',()=>{
@@ -244,14 +252,17 @@
       App.trigger('select_track',trackIndex - 1)
     })
 
-    App.on('filter_tracks_by',function(str){
-      var cols = str.split(':'),
-          col, arr
+    App.on('filter_tracks_by',function(query){
+      var cols = query.split(':'),
+          arr, exact = false, field
+
       if (cols.length === 2){
-        arr = cols[1].toLowerCase().split(' ');
-        col = cols[0]
+        query = cols[1].trim().toLowerCase()
+        field = cols[0]
+        console.log(query,field)
+        exact = true
       } else {
-        arr = str.toLowerCase().split(' ');
+        arr = query.toLowerCase().split(' ');
         cols = ['artist','album','name']
       }
 
@@ -260,24 +271,32 @@
 
       self.allTracks.forEach(function(track,index){
         var str = ''
-        for(var i in cols)
-          if (cols[i])
-            str += track[cols[i]]
+        if (exact) {
+          if (!track[field]) return;
 
+          var value = track[field].toLowerCase().trim();
+          if (value === query)
+            self.tracks.push(track)
+        } else {
+          for(var i in cols)
+            if (cols[i])
+              str += track[cols[i]]
 
-        var str = str.toLowerCase();
+          str = str.toLowerCase().trim();
 
-        var found = true;
-        for(var i in arr) {
-          var word = arr[i];
-          if (str.indexOf(word) === -1) {
-            found = false
-            continue;
+          var found = true;
+          for(var i in arr) {
+            var word = arr[i].trim()
+
+            if (str.indexOf(word) === -1) {
+              found = false
+              continue
+            }
           }
-        }
 
-        if (found) {
-          self.tracks.push(track);
+          if (found) {
+            self.tracks.push(track)
+          }
         }
       })
 

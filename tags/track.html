@@ -53,15 +53,27 @@
     $r.click(self.select);
 
     App.on('selected_track',function(data){
-      if (data !== self.data) return;
+      if (data._id !== self.data._id) return;
 
       self.active = true
       $r.addClass('active')
+
+      var changes = db.changes({
+        since: 'now',
+        live: true,
+        include_docs: true
+      }).on('change', function(change) {
+        var doc = change.doc;
+        if (doc._id === self.data._id) {
+          self.update({data: change.doc})
+        }
+      })
 
       App.one('select_track',function(){
         self.active = false
         $r.removeClass('active')
         self.update()
+        changes.cancel()
       })
 
       self.update()

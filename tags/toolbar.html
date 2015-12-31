@@ -20,7 +20,7 @@
     <div class="right">
       <form onsubmit={ search } class="search">
         <input type="submit" hidden>
-        <input onkeyup={ search } class="query">
+        <input onkeyup={ typeSearch } class="query">
         <svg viewBox="0 0 24 24" class="exit" if={ hasQuery } onclick={ resetSearch }>
           <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z" />
         </svg>
@@ -203,11 +203,19 @@
     // })
 
     var timeout = null;
-    self.search =  function(){
+    self.typeSearch = function(){
+      var query = $(self.root).find('input.query').val()
+      if (query.length > 5)
+        self.search(true)
+    }
+    self.search =  function(now){
       var query = $(self.root).find('input.query').val()
 
-      if (query.length < 3) return;
-
+      if (now) {
+        App.trigger('filter_tracks_by',query)
+        return
+      }
+      
       if (timeout)
         window.clearTimeout(timeout)
 
