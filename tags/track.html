@@ -8,26 +8,31 @@
     track {
       cursor: pointer;
       overflow: hidden;
-      color: #000;
+      color: #444;
       display: block;
       width: 100%;
       font-size: 14px;
-
       &:nth-child(even) {
         background: rgba(0,0,0,.01);
       }
       &:hover {
       }
-      &.active {
-        color: #fff;
-        background: #704FDC;
-        text-shadow: 0px 1px 1px darken(#704FDC,5%);
-        box-shadow: 0px .5px 0px 1px darken(#704FDC,5%) inset;
-      }
       .cell {
         overflow: hidden;
         text-overflow: ellipsis;
         overflow: hidden;
+        &:first-child {
+          color: black;
+        }
+      }
+      &.active {
+        color: rgba(255,255,255,.95);
+        background: #704FDC;
+        text-shadow: 0px 1px 1px darken(#704FDC,5%);
+        box-shadow: 0px .5px 0px 1px darken(#704FDC,5%) inset;
+        .cell:first-child {
+          color: white;
+        }
       }
     }
   </style>

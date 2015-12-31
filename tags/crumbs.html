@@ -2,11 +2,14 @@
 
   <ul if={ data }>
     <li onclick={ reset }>Library</li>
-    <li class="chevron">›</li>
-    <li if={ data.artist } onclick={ search } name="artist">{data.artist}</li>
+
     <li class="chevron" if={ data.artist }>›</li>
-    <li if={ data.album } onclick={ search } name="album">{data.album}</li>
+    <li if={ data.artist } onclick={ search } name="artist">{data.artist}</li>
+
     <li class="chevron" if={ data.album }>›</li>
+    <li if={ data.album } onclick={ search } name="album">{data.album}</li>
+
+    <li class="chevron" if={ data.name }>›</li>
     <li onclick={ search } name="name">{data.name}</li>
   </ul>
 
@@ -59,6 +62,18 @@
     self.reset = function(e){
       App.trigger('filter_tracks_by','')
     }
+
+    var changes = db.changes({
+      since: 'now',
+      live: true,
+      include_docs: true
+    }).on('change', function(change) {
+      var doc = change.doc;
+      if (doc._id === self.data._id) {
+        self.data = doc;
+        self.update();
+      }
+    });
 
   </script>
 

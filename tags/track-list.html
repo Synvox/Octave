@@ -58,12 +58,29 @@
       live: true,
       include_docs: true
     }).on('change', function(change) {
-      add(change.doc);
+      var index = -1;
+
+      for(var i in self.tracks) {
+        if (self.tracks[i]._id === change.doc._id) {
+          index = i;
+          continue;
+        }
+      }
+
+      if (index !== -1) {
+        // Change
+        self.tracks[index] = change.doc;
+      } else {
+        // Add
+        add(change.doc);
+      }
       if (changeDebounce)
         window.clearTimeout(changeDebounce)
+
       changeDebounce = window.setTimeout(function(){
-        sort();
-      },100)
+        sort(true); // true = rerun last limit
+      },500)
+
     }).on('complete', function(info) {
       // changes() was canceled
     }).on('error', function (err) {
@@ -74,7 +91,7 @@
       self.tracks.push(doc)
     }
 
-    var sort = function(){
+    var sort = function(limit){
       var get = function(item,key){
         if (typeof item[key] === 'number')
           return item[key];
@@ -103,11 +120,18 @@
         return 0
       })
 
-      fastRender();
+      fastRender(limit);
     }
 
     var fastRenderTimeout = null;
+    var lastLimit = null;
     function fastRender(limit){
+      if (limit === true){ // Rerun last render
+        limit = lastLimit
+      } else if (limit) {
+        lastLimit = limit
+      }
+
       if (fastRenderTimeout)
         window.clearTimeout(fastRenderTimeout);
 
@@ -159,10 +183,10 @@
       })
     })
 
-    var track = null
+    self.track = null
     var trackIndex = null;
-    var updateInterval = null
     App.on('select_track',function(index){
+      try {
       if (typeof index !== "number") {
         index = self.tracks.indexOf(index);
       }
@@ -174,27 +198,19 @@
 
       trackIndex = index
 
-      if (updateInterval)
-        window.clearInterval(updateInterval)
-
       if (!wavesurfer.isPlaying())
         wavesurfer.pause()
 
       var newData = self.tracks[trackIndex]
 
       App.trigger('selected_track',newData)
+      self.track = newData;
 
       wavesurfer.load(newData.location);
-
-      self.updateTime()
+      } catch (e) {
+        console.error(e)
+      }
     })
-
-    self.updateTime = ()=>{
-      if (!wavesurfer.isPlaying()) return
-
-      App.trigger('track_time_update',wavesurfer.getCurrentTime(), wavesurfer.getDuration())
-      updateInterval = window.setTimeout(self.updateTime,1000)
-    }
 
     App.on('play_pause',()=>{
       if (!wavesurfer.isPlaying()) {

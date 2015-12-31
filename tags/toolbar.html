@@ -12,7 +12,10 @@
         <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z" />
       </svg>
     </div>
-    <div class="center" id="waveform">
+    <div class="center">
+      <span class="time-left">{time.left}</span>
+      <span class="time-right">{time.right}</span>
+      <div id="waveform"></div>
     </div>
     <div class="right">
       <form onsubmit={ search } class="search">
@@ -88,8 +91,25 @@
         border-left: 1px solid #ccc;
         border-right: 1px solid #ccc;
         background: rgba(0,0,0,.03);
+        #waveform {
+          position: absolute;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+          top: 0px;
+        }
         canvas {
           width: 100%;
+        }
+        .time-left {
+          position: absolute;
+          left: 0px
+          top: 8px;
+        }
+        .time-right {
+          position: absolute;
+          right: 0px
+          top: 8px;
         }
       }
       .right {
@@ -148,18 +168,39 @@
     self.playPause = function(){
       App.trigger('play_pause')
     }
+
     self.playNext = function(){
       App.trigger('play_next')
     }
+
     self.playPrev = function(){
       App.trigger('play_prev')
     }
+
     App.on('track_playing',function(){
       self.update({playing: true})
     })
+
     App.on('track_pausing',function(){
       self.update({playing: false})
     })
+
+    // function timeToString(time) {
+    //   var min, sec;
+    //   min = Math.floor(time / 60)
+    //   sec = time - min * 60
+    //
+    //   return min + ':' + sec
+    // }
+    //
+    // App.on('track_time_update',function(cur,total){
+    //   self.update({time:
+    //     {
+    //       left: timeToString(cur),
+    //       right: timeToString(total)
+    //     }
+    //   });
+    // })
 
     var timeout = null;
     self.search =  function(){

@@ -9,7 +9,7 @@ riot.tag2('cell', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.cell);
 });
 
-riot.tag2('crumbs', '<ul if="{data}"> <li onclick="{reset}">Library</li> <li class="chevron">›</li> <li if="{data.artist}" onclick="{search}" name="artist">{data.artist}</li> <li class="chevron" if="{data.artist}">›</li> <li if="{data.album}" onclick="{search}" name="album">{data.album}</li> <li class="chevron" if="{data.album}">›</li> <li onclick="{search}" name="name">{data.name}</li> </ul>', 'body{background:#202020}crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:#ddd;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block;cursor:pointer}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}crumbs ul li:hover{color:#fff}', '', function(opts) {
+riot.tag2('crumbs', '<ul if="{data}"> <li onclick="{reset}">Library</li> <li class="chevron" if="{data.artist}">›</li> <li if="{data.artist}" onclick="{search}" name="artist">{data.artist}</li> <li class="chevron" if="{data.album}">›</li> <li if="{data.album}" onclick="{search}" name="album">{data.album}</li> <li class="chevron" if="{data.name}">›</li> <li onclick="{search}" name="name">{data.name}</li> </ul>', 'body{background:#202020}crumbs{background:#202020}crumbs ul{height:40px;font-size:16px;color:#ddd;line-height:30px;position:absolute;bottom:0;left:20px;-webkit-user-select:none}crumbs ul li{display:inline-block;cursor:pointer}crumbs ul li.chevron{font-size:2.5em;position:relative;top:6px;opacity:.5}crumbs ul li:hover{color:#fff}', '', function(opts) {
 
 var self = this;
 self.data = null;
@@ -27,31 +27,64 @@ self.search = function (e) {
 self.reset = function (e) {
   App.trigger('filter_tracks_by', '');
 };
+
+var changes = db.changes({
+  since: 'now',
+  live: true,
+  include_docs: true
+}).on('change', function (change) {
+  var doc = change.doc;
+  if (doc._id === self.data._id) {
+    self.data = doc;
+    self.update();
+  }
+});
 }, '{ }');
 
 riot.tag2('panel', '<yield></yield>', '', '', function(opts) {
 this.mixin(Power.panel);
 });
 
-riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center" id="waveform"> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{search}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center canvas{width:100%}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(100% - 22px)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
+riot.tag2('toolbar', '<div class="inner"> <div class="left"> <svg viewbox="0 0 24 24" onclick="{playPrev}"> <path d="M11.5,12L20,18V6M11,18V6L2.5,12L11,18Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playPause}"> <path if="{playing}" d="M14,19.14H18V5.14H14M6,19.14H10V5.14H6V19.14Z"></path> <path if="{!playing}" d="M8,5.14V19.14L19,12.14L8,5.14Z"></path> </svg> <svg viewbox="0 0 24 24" onclick="{playNext}"> <path d="M13,6V18L21.5,12M4,18L12.5,12L4,6V18Z"></path> </svg> </div> <div class="center"> <span class="time-left">{time.left}</span> <span class="time-right">{time.right}</span> <div id="waveform"></div> </div> <div class="right"> <form onsubmit="{search}" class="search"> <input type="submit" hidden> <input onkeyup="{search}" class="query"> <svg viewbox="0 0 24 24" class="exit" if="{hasQuery}" onclick="{resetSearch}"> <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19M17,8.4L13.4,12L17,15.6L15.6,17L12,13.4L8.4,17L7,15.6L10.6,12L7,8.4L8.4,7L12,10.6L15.6,7L17,8.4Z"></path> </svg> </form> </div> </div> <crumbs></crumbs>', 'toolbar{display:block;height:110px;position:fixed;left:0;right:0;top:0;background:white;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1);overflow:hidden;z-index:10}toolbar .inner{position:absolute;top:60px;height:50px;left:0;right:0;overflow:hidden;z-index:10}toolbar crumbs{position:absolute;left:0;right:0;height:60px;top:0;z-index:9}toolbar .left{padding:4px 0;width:25vw;text-align:center;position:absolute;top:0;left:0;bottom:0;z-index:10;-webkit-user-select:none;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .left svg{width:40px}toolbar .left svg path{fill:#555}toolbar .left svg:active path{fill:#000}toolbar .center{text-align:center;position:absolute;top:0;right:25vw;left:25vw;bottom:0;z-index:9;border-left:1px solid #ccc;border-right:1px solid #ccc;background:rgba(0,0,0,0.03)}toolbar .center #waveform{position:absolute;left:0;right:0;bottom:0;top:0}toolbar .center canvas{width:100%}toolbar .center .time-left{position:absolute;left:0px top: 8px}toolbar .center .time-right{position:absolute;right:0px top: 8px}toolbar .right{width:25vw;text-align:center;position:absolute;top:0;right:0;bottom:0;z-index:10;box-shadow:0 0 2px rgba(0,0,0,0.3),0 0 16px rgba(0,0,0,0.1)}toolbar .right form.search{border:1px solid #ccc;border-radius:3px;position:absolute;top:10px;right:10px;bottom:10px;height:30px;width:calc(100% - 22px)}toolbar .right form.search input.query{position:absolute;left:0;top:0;bottom:0;border:none;padding:0 12px;width:calc(100% - 30px)}toolbar .right form.search input.query:focus{outline:none}toolbar .right form.search .exit{position:absolute;right:5px;top:5px;height:18px;cursor:pointer}toolbar .right form.search .exit path{fill:#444}toolbar .right form.search .exit:active path{fill:#000}', '', function(opts) {
 var self = this;
 self.playing = false;
 
 self.playPause = function () {
   App.trigger('play_pause');
 };
+
 self.playNext = function () {
   App.trigger('play_next');
 };
+
 self.playPrev = function () {
   App.trigger('play_prev');
 };
+
 App.on('track_playing', function () {
   self.update({ playing: true });
 });
+
 App.on('track_pausing', function () {
   self.update({ playing: false });
 });
+
+// function timeToString(time) {
+//   var min, sec;
+//   min = Math.floor(time / 60)
+//   sec = time - min * 60
+//
+//   return min + ':' + sec
+// }
+//
+// App.on('track_time_update',function(cur,total){
+//   self.update({time:
+//     {
+//       left: timeToString(cur),
+//       right: timeToString(total)
+//     }
+//   });
+// })
 
 var timeout = null;
 self.search = function () {
@@ -105,11 +138,27 @@ var changes = db.changes({
   live: true,
   include_docs: true
 }).on('change', function (change) {
-  add(change.doc);
+  var index = -1;
+
+  for (var i in self.tracks) {
+    if (self.tracks[i]._id === change.doc._id) {
+      index = i;
+      continue;
+    }
+  }
+
+  if (index !== -1) {
+    // Change
+    self.tracks[index] = change.doc;
+  } else {
+    // Add
+    add(change.doc);
+  }
   if (changeDebounce) window.clearTimeout(changeDebounce);
+
   changeDebounce = window.setTimeout(function () {
-    sort();
-  }, 100);
+    sort(true); // true = rerun last limit
+  }, 500);
 }).on('complete', function (info) {
   // changes() was canceled
 }).on('error', function (err) {
@@ -120,7 +169,7 @@ var add = function (doc) {
   self.tracks.push(doc);
 };
 
-var sort = function () {
+var sort = function (limit) {
   var get = function (item, key) {
     if (typeof item[key] === 'number') return item[key];else return (item[key] ? ('' + item[key]).trim() : '').toLowerCase();
   };
@@ -145,11 +194,19 @@ var sort = function () {
     return 0;
   });
 
-  fastRender();
+  fastRender(limit);
 };
 
 var fastRenderTimeout = null;
+var lastLimit = null;
 function fastRender(limit) {
+  if (limit === true) {
+    // Rerun last render
+    limit = lastLimit;
+  } else if (limit) {
+    lastLimit = limit;
+  }
+
   if (fastRenderTimeout) window.clearTimeout(fastRenderTimeout);
 
   self.renderedTracks = [];
@@ -200,38 +257,31 @@ self.on('mount', function () {
   });
 });
 
-var track = null;
+self.track = null;
 var trackIndex = null;
-var updateInterval = null;
 App.on('select_track', function (index) {
-  if (typeof index !== "number") {
-    index = self.tracks.indexOf(index);
+  try {
+    if (typeof index !== "number") {
+      index = self.tracks.indexOf(index);
+    }
+
+    if (index < 0) index = self.tracks.length - 1;
+    if (index >= self.tracks.length) index = 0;
+
+    trackIndex = index;
+
+    if (!wavesurfer.isPlaying()) wavesurfer.pause();
+
+    var newData = self.tracks[trackIndex];
+
+    App.trigger('selected_track', newData);
+    self.track = newData;
+
+    wavesurfer.load(newData.location);
+  } catch (e) {
+    console.error(e);
   }
-
-  if (index < 0) index = self.tracks.length - 1;
-  if (index >= self.tracks.length) index = 0;
-
-  trackIndex = index;
-
-  if (updateInterval) window.clearInterval(updateInterval);
-
-  if (!wavesurfer.isPlaying()) wavesurfer.pause();
-
-  var newData = self.tracks[trackIndex];
-
-  App.trigger('selected_track', newData);
-
-  wavesurfer.load(newData.location);
-
-  self.updateTime();
 });
-
-self.updateTime = () => {
-  if (!wavesurfer.isPlaying()) return;
-
-  App.trigger('track_time_update', wavesurfer.getCurrentTime(), wavesurfer.getDuration());
-  updateInterval = window.setTimeout(self.updateTime, 1000);
-};
 
 App.on('play_pause', () => {
   if (!wavesurfer.isPlaying()) {
@@ -295,7 +345,7 @@ App.on('filter_tracks_by', function (str) {
 });
 }, '{ }');
 
-riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#000;display:block;width:100%;font-size:14px}track:nth-child(even){background:rgba(0,0,0,0.01)}track.active{color:#fff;background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track .cell{text-overflow:ellipsis;overflow:hidden}', '', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#444;display:block;width:100%;font-size:14px}track:nth-child(even){background:rgba(0,0,0,0.01)}track .cell{text-overflow:ellipsis;overflow:hidden}track .cell:first-child{color:black}track.active{color:rgba(255,255,255,0.95);background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track.active .cell:first-child{color:white}', '', function(opts) {
 var self = this;
 self.data = self.opts.data;
 self.index = self.opts.index;
@@ -334,20 +384,38 @@ self.playPause = () => {
 };
 }, '{ }');
 
-riot.tag2('trackexplorer', '<img class="artwork" if="{artUrl}" riot-src="{artUrl}"> <div if="{data}" class="metadata"> <h1 contenteditable>{name}</h1> <h2 contenteditable>{album}</h2> <h2 contenteditable>{artist}</h2> </div>', 'trackexplorer{position:absolute;top:110px;bottom:0;right:0;width:25vw;z-index:11;transition-duration:.1s;background:#fff;box-shadow:-1px 0 0 #ccc;transform:translateX(100%);opacity:0}trackexplorer.show{transform:translate(0);opacity:1}trackexplorer .artwork{width:calc(100% - 40px);margin:20px;background-size:contain}trackexplorer .metadata{padding:0 20px}trackexplorer .metadata h1{font-size:1.5em}trackexplorer .metadata h1,trackexplorer .metadata h2{padding:4px 8px;border:none;width:100%;margin-bottom:4px}trackexplorer .metadata h1:hover,trackexplorer .metadata h2:hover{background:#f8f8f8}trackexplorer .metadata h1:focus,trackexplorer .metadata h2:focus{background:#f8f8f8;outline:none}trackexplorer .metadata input.name{font-size:18px;font-weight:bold}', '', function(opts) {
+riot.tag2('trackexplorer', '<img class="artwork" if="{artUrl}" riot-src="{artUrl}"> <svg class="artwork" if="{!artUrl}" viewbox="0 0 3000 3000" xmlns="http://www.w3.org/2000/svg"> <path id="clef" d="m955.64978,2286.263916c-150.866272,-8.768799 -304.898865,-103.396484 -397.021301,-212.004883c-106.805817,-125.923706 -150.840027,-297.129028 -139.560638,-437.725464c33.135376,-413.110596 482.383636,-657.278381 648.68399,-837.728271c111.314575,-120.786133 134.650146,-179.667542 159.51355,-241.789001c48.135864,-120.247131 55.890015,-261.134308 -39.541504,-271.652649c-91.112793,-10.042603 -166.073059,133.244293 -199.55188,231.170349c-30.106689,88.078979 -50.117859,176.448669 -32.004333,309.190796c8.139893,59.637268 232.19574,1724.347961 235.975037,1750.152161c37.734009,257.873047 -109.739258,364.578613 -260.283203,383.55957c-325.089905,40.984375 -429.400909,-289.380859 -283.698425,-414.850342c112.170532,-96.604492 275.362976,-13.668457 266.546631,145.152832c-7.806641,140.670898 -145.739197,144.814697 -180.983765,141.60083c54.103394,97.032715 461.981384,147.727051 399.352234,-290.664551c-8.800415,-61.604004 -215.841919,-1625.99408 -220.916016,-1661.000427c-37.982178,-262.069885 -43.769836,-469.507965 92.772583,-711.582489c50.408447,-89.363411 130.072754,-147.055498 169.180908,-139.502464c8.59436,1.659588 17.156982,4.815323 23.954224,11.829124c104.739258,107.921097 136.870361,347.241821 125.395386,484.720001c-11.75,140.765625 -18.298706,286.489197 -158.266357,456.426025c-54.166626,65.763306 -219.457581,210.635864 -314.228088,293.867798c-133.159668,116.943726 -229.743164,219.082275 -282.001648,342.299927c-58.72818,138.4823 -68.67038,312.806152 63.976746,467.483521c76.302612,87.391846 202.903015,149.4021 309.449768,150.723877c296.256958,3.678467 382.771362,-142.356934 385.535767,-307.737671c4.550781,-272.318359 -324.207214,-375.276245 -459.370117,-188.034424c-78.369324,108.571045 -43.923401,222.845459 8.710632,277.212891c18.066162,18.658203 38.24646,32.870972 57.338013,40.794067c6.918762,2.869873 23.193176,10.438965 18.573547,21.517822c-3.842712,9.217773 -11.305908,9.736084 -18.103149,8.921875c-85.235352,-10.222412 -179.614868,-91.694214 -202.823608,-231.830933c-33.817261,-204.250854 146.426392,-446.541992 403.712769,-406.916016c168.44104,25.941772 324.831177,170.877686 311.11499,440.765137c-11.760376,231.307251 -203.521606,412.365356 -491.432739,395.630981z" fill="#eee" transform="rotate(-0.027732 932.637 1495.43)"></path> </svg> <div if="{data}" class="metadata"> <textarea rows="1" class="h1" contenteditable onblur="{change(\'name\')}">{data.name}</textarea> <span class="label">By:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'artist\')}">{data.artist}</textarea> <span class="label">From:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'album\')}">{data.album}</textarea> </div>', 'trackexplorer{position:absolute;top:110px;bottom:0;right:0;width:25vw;z-index:11;transition-duration:.1s;background:#fff;box-shadow:-1px 0 0 #ccc;transform:translateX(100%);opacity:0}trackexplorer.show{transform:translate(0);opacity:1}trackexplorer .artwork{width:calc(100% - 20px);margin:10px;margin-top:0}trackexplorer .metadata{padding:0 20px}trackexplorer .metadata .label{color:#888;font-size:.7em}trackexplorer .metadata textarea.h1,trackexplorer .metadata textarea.h2{font-size:16px;padding:4px 8px;border:none;width:100%;margin-bottom:4px;color:#555}trackexplorer .metadata textarea.h1:hover,trackexplorer .metadata textarea.h2:hover{background:#f8f8f8}trackexplorer .metadata textarea.h1:focus,trackexplorer .metadata textarea.h2:focus{background:#f8f8f8;outline:none}trackexplorer .metadata textarea.h1{font-size:1.5em;color:#333}trackexplorer .metadata input.name{font-size:18px;font-weight:bold}', '', function(opts) {
 var self = this;
 var $r = $(self.root);
 var id3 = require('id3js');
 self.artUrl = "";
 
-//https://api.spotify.com/v1/search?q=coldplay&type=album
+self.change = function (field) {
+  return function (e) {
+    var val = $(e.target).val();
+    if (self.data[field] === val) return;
+
+    self.data[field] = val;
+    db.put(self.data).then(res => {
+      console.log('Saved Changes', self.data);
+      self.data._rev = res.rev;
+    });
+  };
+};
+
+self.on('update', () => {
+  window.setTimeout(function () {
+    $r.find('textarea').each(function (i, element) {
+      element.style.height = "5px";
+      element.style.height = element.scrollHeight + "px";
+    });
+  }, 200);
+});
 
 var previousTrack = null;
 App.on('selected_track', function (track) {
+  if ($r.find('textarea:focus').length) return;
   self.data = track;
-  self.name = track.name;
-  self.artist = track.artist;
-  self.album = track.album;
   self.update();
 
   var location = track.location.substring(track.location.indexOf('/Users'));
