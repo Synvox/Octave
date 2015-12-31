@@ -114,7 +114,100 @@ App.on('filter_tracks_by', function (query) {
 });
 }, '{ }');
 
-riot.tag2('track-list', '<track each="{val, i in renderedTracks}" index="{i}" data="{val}"></track>', 'track-list{color:#333;background:white;display:block;width:100%;white-space:nowrap;position:absolute;top:110px;left:0;right:0;bottom:0;overflow:auto}track-list .cell{padding:8px;display:inline-block;float:left}track-list .cell:nth-child(1){width:30vw}track-list .cell:nth-child(2){width:20vw}', '', function(opts) {
+riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#444;display:block;width:100%;font-size:14px}track:nth-child(even){background:rgba(0,0,0,0.01)}track .cell{text-overflow:ellipsis;overflow:hidden}track .cell:first-child{color:black}track.active{color:rgba(255,255,255,0.95);background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track.active .cell:first-child{color:white}', '', function(opts) {
+var self = this;
+self.data = self.opts.data;
+self.index = self.opts.index;
+// self.time = new Date(self.data['Total Time'])
+// self.timeStr = self.time.getMinutes() + ':' + ((self.time.getSeconds()<10)? '0':'') + self.time.getSeconds()
+
+var $r = $(self.root);
+
+self.active = false;
+self.select = () => {
+  if (self.active) return;
+  App.trigger('select_track', self.data);
+};
+$r.click(self.select);
+
+App.on('selected_track', function (data) {
+  if (data !== self.data) return;
+
+  self.active = true;
+  $r.addClass('active');
+
+  App.one('select_track', function () {
+    self.active = false;
+    $r.removeClass('active');
+    self.update();
+  });
+
+  self.update();
+});
+
+self.playPause = () => {
+  $r.find('.circle').toggleClass('playing');
+  window.setTimeout(() => {
+    App.trigger('play_pause');
+  }, 1);
+};
+}, '{ }');
+
+riot.tag2('trackexplorer', '<img class="artwork" if="{artUrl}" riot-src="{artUrl}"> <svg class="artwork" if="{!artUrl}" viewbox="0 0 3000 3000" xmlns="http://www.w3.org/2000/svg"> <path id="clef" d="m955.64978,2286.263916c-150.866272,-8.768799 -304.898865,-103.396484 -397.021301,-212.004883c-106.805817,-125.923706 -150.840027,-297.129028 -139.560638,-437.725464c33.135376,-413.110596 482.383636,-657.278381 648.68399,-837.728271c111.314575,-120.786133 134.650146,-179.667542 159.51355,-241.789001c48.135864,-120.247131 55.890015,-261.134308 -39.541504,-271.652649c-91.112793,-10.042603 -166.073059,133.244293 -199.55188,231.170349c-30.106689,88.078979 -50.117859,176.448669 -32.004333,309.190796c8.139893,59.637268 232.19574,1724.347961 235.975037,1750.152161c37.734009,257.873047 -109.739258,364.578613 -260.283203,383.55957c-325.089905,40.984375 -429.400909,-289.380859 -283.698425,-414.850342c112.170532,-96.604492 275.362976,-13.668457 266.546631,145.152832c-7.806641,140.670898 -145.739197,144.814697 -180.983765,141.60083c54.103394,97.032715 461.981384,147.727051 399.352234,-290.664551c-8.800415,-61.604004 -215.841919,-1625.99408 -220.916016,-1661.000427c-37.982178,-262.069885 -43.769836,-469.507965 92.772583,-711.582489c50.408447,-89.363411 130.072754,-147.055498 169.180908,-139.502464c8.59436,1.659588 17.156982,4.815323 23.954224,11.829124c104.739258,107.921097 136.870361,347.241821 125.395386,484.720001c-11.75,140.765625 -18.298706,286.489197 -158.266357,456.426025c-54.166626,65.763306 -219.457581,210.635864 -314.228088,293.867798c-133.159668,116.943726 -229.743164,219.082275 -282.001648,342.299927c-58.72818,138.4823 -68.67038,312.806152 63.976746,467.483521c76.302612,87.391846 202.903015,149.4021 309.449768,150.723877c296.256958,3.678467 382.771362,-142.356934 385.535767,-307.737671c4.550781,-272.318359 -324.207214,-375.276245 -459.370117,-188.034424c-78.369324,108.571045 -43.923401,222.845459 8.710632,277.212891c18.066162,18.658203 38.24646,32.870972 57.338013,40.794067c6.918762,2.869873 23.193176,10.438965 18.573547,21.517822c-3.842712,9.217773 -11.305908,9.736084 -18.103149,8.921875c-85.235352,-10.222412 -179.614868,-91.694214 -202.823608,-231.830933c-33.817261,-204.250854 146.426392,-446.541992 403.712769,-406.916016c168.44104,25.941772 324.831177,170.877686 311.11499,440.765137c-11.760376,231.307251 -203.521606,412.365356 -491.432739,395.630981z" fill="#eee" transform="rotate(-0.027732 932.637 1495.43)"></path> </svg> <div if="{data}" class="metadata"> <textarea rows="1" class="h1" contenteditable onblur="{change(\'name\')}">{data.name}</textarea> <span class="label">By:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'artist\')}">{data.artist}</textarea> <span class="label">From:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'album\')}">{data.album}</textarea> </div>', 'trackexplorer{position:absolute;top:110px;bottom:0;right:0;width:25vw;z-index:11;transition-duration:.1s;background:#fff;box-shadow:-1px 0 0 #ccc;transform:translateX(100%);opacity:0}trackexplorer.show{transform:translate(0);opacity:1}trackexplorer .artwork{width:calc(100% - 20px);margin:10px;margin-top:0}trackexplorer .metadata{padding:0 20px}trackexplorer .metadata .label{color:#888;font-size:.7em}trackexplorer .metadata textarea.h1,trackexplorer .metadata textarea.h2{font-size:16px;padding:4px 8px;border:none;width:100%;margin-bottom:4px;color:#555}trackexplorer .metadata textarea.h1:hover,trackexplorer .metadata textarea.h2:hover{background:#f8f8f8}trackexplorer .metadata textarea.h1:focus,trackexplorer .metadata textarea.h2:focus{background:#f8f8f8;outline:none}trackexplorer .metadata textarea.h1{font-size:1.5em;color:#333}trackexplorer .metadata input.name{font-size:18px;font-weight:bold}', '', function(opts) {
+var self = this;
+var $r = $(self.root);
+var id3 = require('id3js');
+self.artUrl = "";
+
+self.change = function (field) {
+  return function (e) {
+    var val = $(e.target).val();
+    if (self.data[field] === val) return;
+
+    self.data[field] = val;
+    db.put(self.data).then(res => {
+      console.log('Saved Changes', self.data);
+      self.data._rev = res.rev;
+    });
+  };
+};
+
+self.on('update', () => {
+  window.setTimeout(function () {
+    $r.find('textarea').each(function (i, element) {
+      element.style.height = "5px";
+      element.style.height = element.scrollHeight + "px";
+    });
+  }, 200);
+});
+
+var previousTrack = null;
+App.on('selected_track', function (track) {
+  if ($r.find('textarea:focus').length) return;
+  self.data = track;
+  self.update();
+
+  var location = track.location.substring(track.location.indexOf('/Users'));
+  location = unescape(location);
+  var fs = require('fs');
+  var mm = require('musicmetadata');
+
+  // create a new parser from a node ReadStream
+  var parser = mm(fs.createReadStream(location), function (err, result) {
+    $r.addClass('show');
+
+    if (result.picture.length > 0) {
+      var picture = result.picture[0];
+      var url = URL.createObjectURL(new Blob([picture.data], { 'type': 'image/' + picture.format }));
+      self.update({ artUrl: url });
+    } else {
+      self.update({ artUrl: '' });
+    }
+  });
+});
+}, '{ }');
+
+riot.tag2('tracklist', '<track each="{val, i in renderedTracks}" index="{i}" data="{val}"></track>', 'tracklist{color:#333;background:white;display:block;width:100%;white-space:nowrap;position:absolute;top:110px;left:0;right:0;bottom:0;overflow:auto}tracklist .cell{padding:8px;display:inline-block;float:left}tracklist .cell:nth-child(1){width:30vw}tracklist .cell:nth-child(2){width:20vw}', '', function(opts) {
 var self = this;
 var $r = $(self.root);
 
@@ -341,99 +434,6 @@ App.on('filter_tracks_by', function (str) {
 
   $r.one('scroll', function () {
     fastRender();
-  });
-});
-}, '{ }');
-
-riot.tag2('track', '<div class="cell">{data.name}</div> <div class="cell">{data.album}</div> <div class="cell">{data.artist}</div>', 'track{cursor:pointer;overflow:hidden;color:#444;display:block;width:100%;font-size:14px}track:nth-child(even){background:rgba(0,0,0,0.01)}track .cell{text-overflow:ellipsis;overflow:hidden}track .cell:first-child{color:black}track.active{color:rgba(255,255,255,0.95);background:#704FDC;text-shadow:0 1px 1px #5f3ad8;box-shadow:0 .5px 0 1px #5f3ad8 inset}track.active .cell:first-child{color:white}', '', function(opts) {
-var self = this;
-self.data = self.opts.data;
-self.index = self.opts.index;
-// self.time = new Date(self.data['Total Time'])
-// self.timeStr = self.time.getMinutes() + ':' + ((self.time.getSeconds()<10)? '0':'') + self.time.getSeconds()
-
-var $r = $(self.root);
-
-self.active = false;
-self.select = () => {
-  if (self.active) return;
-  App.trigger('select_track', self.data);
-};
-$r.click(self.select);
-
-App.on('selected_track', function (data) {
-  if (data !== self.data) return;
-
-  self.active = true;
-  $r.addClass('active');
-
-  App.one('select_track', function () {
-    self.active = false;
-    $r.removeClass('active');
-    self.update();
-  });
-
-  self.update();
-});
-
-self.playPause = () => {
-  $r.find('.circle').toggleClass('playing');
-  window.setTimeout(() => {
-    App.trigger('play_pause');
-  }, 1);
-};
-}, '{ }');
-
-riot.tag2('trackexplorer', '<img class="artwork" if="{artUrl}" riot-src="{artUrl}"> <svg class="artwork" if="{!artUrl}" viewbox="0 0 3000 3000" xmlns="http://www.w3.org/2000/svg"> <path id="clef" d="m955.64978,2286.263916c-150.866272,-8.768799 -304.898865,-103.396484 -397.021301,-212.004883c-106.805817,-125.923706 -150.840027,-297.129028 -139.560638,-437.725464c33.135376,-413.110596 482.383636,-657.278381 648.68399,-837.728271c111.314575,-120.786133 134.650146,-179.667542 159.51355,-241.789001c48.135864,-120.247131 55.890015,-261.134308 -39.541504,-271.652649c-91.112793,-10.042603 -166.073059,133.244293 -199.55188,231.170349c-30.106689,88.078979 -50.117859,176.448669 -32.004333,309.190796c8.139893,59.637268 232.19574,1724.347961 235.975037,1750.152161c37.734009,257.873047 -109.739258,364.578613 -260.283203,383.55957c-325.089905,40.984375 -429.400909,-289.380859 -283.698425,-414.850342c112.170532,-96.604492 275.362976,-13.668457 266.546631,145.152832c-7.806641,140.670898 -145.739197,144.814697 -180.983765,141.60083c54.103394,97.032715 461.981384,147.727051 399.352234,-290.664551c-8.800415,-61.604004 -215.841919,-1625.99408 -220.916016,-1661.000427c-37.982178,-262.069885 -43.769836,-469.507965 92.772583,-711.582489c50.408447,-89.363411 130.072754,-147.055498 169.180908,-139.502464c8.59436,1.659588 17.156982,4.815323 23.954224,11.829124c104.739258,107.921097 136.870361,347.241821 125.395386,484.720001c-11.75,140.765625 -18.298706,286.489197 -158.266357,456.426025c-54.166626,65.763306 -219.457581,210.635864 -314.228088,293.867798c-133.159668,116.943726 -229.743164,219.082275 -282.001648,342.299927c-58.72818,138.4823 -68.67038,312.806152 63.976746,467.483521c76.302612,87.391846 202.903015,149.4021 309.449768,150.723877c296.256958,3.678467 382.771362,-142.356934 385.535767,-307.737671c4.550781,-272.318359 -324.207214,-375.276245 -459.370117,-188.034424c-78.369324,108.571045 -43.923401,222.845459 8.710632,277.212891c18.066162,18.658203 38.24646,32.870972 57.338013,40.794067c6.918762,2.869873 23.193176,10.438965 18.573547,21.517822c-3.842712,9.217773 -11.305908,9.736084 -18.103149,8.921875c-85.235352,-10.222412 -179.614868,-91.694214 -202.823608,-231.830933c-33.817261,-204.250854 146.426392,-446.541992 403.712769,-406.916016c168.44104,25.941772 324.831177,170.877686 311.11499,440.765137c-11.760376,231.307251 -203.521606,412.365356 -491.432739,395.630981z" fill="#eee" transform="rotate(-0.027732 932.637 1495.43)"></path> </svg> <div if="{data}" class="metadata"> <textarea rows="1" class="h1" contenteditable onblur="{change(\'name\')}">{data.name}</textarea> <span class="label">By:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'artist\')}">{data.artist}</textarea> <span class="label">From:</span> <textarea rows="1" class="h2" contenteditable onblur="{change(\'album\')}">{data.album}</textarea> </div>', 'trackexplorer{position:absolute;top:110px;bottom:0;right:0;width:25vw;z-index:11;transition-duration:.1s;background:#fff;box-shadow:-1px 0 0 #ccc;transform:translateX(100%);opacity:0}trackexplorer.show{transform:translate(0);opacity:1}trackexplorer .artwork{width:calc(100% - 20px);margin:10px;margin-top:0}trackexplorer .metadata{padding:0 20px}trackexplorer .metadata .label{color:#888;font-size:.7em}trackexplorer .metadata textarea.h1,trackexplorer .metadata textarea.h2{font-size:16px;padding:4px 8px;border:none;width:100%;margin-bottom:4px;color:#555}trackexplorer .metadata textarea.h1:hover,trackexplorer .metadata textarea.h2:hover{background:#f8f8f8}trackexplorer .metadata textarea.h1:focus,trackexplorer .metadata textarea.h2:focus{background:#f8f8f8;outline:none}trackexplorer .metadata textarea.h1{font-size:1.5em;color:#333}trackexplorer .metadata input.name{font-size:18px;font-weight:bold}', '', function(opts) {
-var self = this;
-var $r = $(self.root);
-var id3 = require('id3js');
-self.artUrl = "";
-
-self.change = function (field) {
-  return function (e) {
-    var val = $(e.target).val();
-    if (self.data[field] === val) return;
-
-    self.data[field] = val;
-    db.put(self.data).then(res => {
-      console.log('Saved Changes', self.data);
-      self.data._rev = res.rev;
-    });
-  };
-};
-
-self.on('update', () => {
-  window.setTimeout(function () {
-    $r.find('textarea').each(function (i, element) {
-      element.style.height = "5px";
-      element.style.height = element.scrollHeight + "px";
-    });
-  }, 200);
-});
-
-var previousTrack = null;
-App.on('selected_track', function (track) {
-  if ($r.find('textarea:focus').length) return;
-  self.data = track;
-  self.update();
-
-  var location = track.location.substring(track.location.indexOf('/Users'));
-  location = unescape(location);
-  var fs = require('fs');
-  var mm = require('musicmetadata');
-
-  // create a new parser from a node ReadStream
-  var parser = mm(fs.createReadStream(location), function (err, result) {
-    $r.addClass('show');
-
-    if (result.picture.length > 0) {
-      var picture = result.picture[0];
-      var url = URL.createObjectURL(new Blob([picture.data], { 'type': 'image/' + picture.format }));
-      self.update({ artUrl: url });
-    } else {
-      self.update({ artUrl: '' });
-    }
   });
 });
 }, '{ }');
