@@ -9,6 +9,9 @@ OctaveDB
 # Bundled application
 bundle
 
+# compiled tags
+tags/tags.js
+
 # Runtime data
 pids
 *.pid

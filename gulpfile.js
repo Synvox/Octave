@@ -37,7 +37,8 @@ gulp.task('build',function(){
     platform: 'darwin',
     dir: '.',
     out: './bundle/',
-    overwrite: true
+    overwrite: true,
+    icon: './Octave.icns'
   };
   var packager = require('electron-packager')
   packager(opts, function done (err, appPath) {

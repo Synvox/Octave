@@ -1,36 +1,36 @@
 <tracklist>
   <track each={ val, i in renderedTracks } index={ i } data={ val }></track>
-
+  <yield/>
   <style type="less">
 
-  @colWidth: 20vw;
-  tracklist {
-    color: #333;
-    background: white;
-    display: block;
-    width: 100%;
-    white-space: nowrap;
-    position: absolute;
-    top: 110px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    overflow: auto;
-    .cell {
-      padding: 8px;
-      display: inline-block;
-      float: left;
-      &:nth-child(1) {
-        width: @colWidth * 1.5;
-      }
-      &:nth-child(2) {
-        width: @colWidth;
-      }
-      &:nth-child(3) {
-        //width: @colWidth;
+    @colWidth: 20vw;
+    tracklist {
+      color: #333;
+      background: white;
+      display: block;
+      width: 100%;
+      white-space: nowrap;
+      position: absolute;
+      top: 100px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      overflow: auto;
+      .cell {
+        padding: 8px;
+        display: inline-block;
+        float: left;
+        &:nth-child(1) {
+          width: @colWidth * 1.5;
+        }
+        &:nth-child(2) {
+          width: @colWidth;
+        }
+        &:nth-child(3) {
+          //width: @colWidth;
+        }
       }
     }
-  }
   </style>
   <script>
     var self = this
@@ -246,18 +246,71 @@
       }
     })
 
+    var shuffle = false;
+    var repeat = false;
+    var previousTracks = []
     App.on('play_next',()=>{
-      App.trigger('select_track',parseInt(trackIndex) + 1)
+      if (repeat) {
+        App.trigger('select_track',parseInt(trackIndex))
+      } else if (shuffle) {
+        App.trigger('select_track',pickShuffled())
+      } else {
+        App.trigger('select_track',parseInt(trackIndex) + 1)
+      }
     })
 
     App.on('play_prev',()=>{
-      console.log(trackIndex -1)
-      App.trigger('select_track',parseInt(trackIndex) - 1)
+      if (previousTracks.length > 0)
+        App.trigger('select_track',previousTracks.pop())
+      else
+        App.trigger('select_track',parseInt(trackIndex) - 1)
+    })
+
+    function pickShuffled(){
+      var pickedIndex = Math.floor(Math.random() * self.tracks.length)
+
+      if (previousTracks.length === self.tracks.length) {
+        pickedIndex = previousTracks[0]
+        previousTracks = [];
+        return pickedIndex;
+      }
+
+      while(previousTracks.indexOf(pickedIndex) === false) {
+        pickedIndex++
+        if (pixedIndex > tracks.length)
+          pickedIndex = 0;
+      }
+
+      previousTracks.push(pickedIndex);
+      return pickedIndex;
+    }
+
+    App.on('toggle_shuffle',function(){
+      shuffle = !shuffle;
+      previousTracks = [];
+      App.trigger('shuffling',shuffle)
+    })
+
+    App.on('toggle_repeat',function(){
+      repeat = !repeat;
+      App.trigger('repeating',repeat)
+    })
+
+    App.on('change_volume',function(volume){
+      wavesurfer.setVolume(volume)
     })
 
     App.on('filter_tracks_by',function(query){
+      previousTracks = [];
+
       var cols = query.split(':'),
           arr, exact = false, field
+
+      if (query.length === 0) {
+        self.tracks = self.allTracks.slice();
+        fastRender(100);
+        return;
+      }
 
       if (cols.length === 2){
         query = cols[1].trim().toLowerCase()
@@ -266,7 +319,7 @@
         exact = true
       } else {
         arr = query.toLowerCase().split(' ');
-        cols = ['artist','album','name']
+        cols = ['artist','album','name','tags']
       }
 
       self.allTracks = self.allTracks || self.tracks.slice(); // Copy
@@ -285,7 +338,7 @@
             if (cols[i])
               str += track[cols[i]]
 
-          str = str.toLowerCase().trim();
+          str = str.toLowerCase().trim()
 
           var found = true;
           for(var i in arr) {
@@ -306,9 +359,10 @@
       fastRender(100);
 
       $r.one('scroll',function(){
-        fastRender();
+        fastRender(Infinity);
       });
     })
+
 
   </script>
 

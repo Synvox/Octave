@@ -12,13 +12,13 @@
       display: block;
       width: 100%;
       font-size: 14px;
+      white-space: nowrap;
       &:nth-child(even) {
         background: rgba(0,0,0,.01);
       }
       &:hover {
       }
       .cell {
-        overflow: hidden;
         text-overflow: ellipsis;
         overflow: hidden;
         &:first-child {
@@ -40,8 +40,6 @@
     var self = this
     self.data = self.opts.data
     self.index = self.opts.index
-    // self.time = new Date(self.data['Total Time'])
-    // self.timeStr = self.time.getMinutes() + ':' + ((self.time.getSeconds()<10)? '0':'') + self.time.getSeconds()
 
     var $r = $(self.root)
 

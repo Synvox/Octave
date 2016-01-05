@@ -26,19 +26,6 @@
       bottom: 0px;
       overflow: hidden;
     }
-    ::-webkit-scrollbar-corner {
-      background-color: transparent;
-    }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      -webkit-border-radius: 2px;
-      background: rgba(150, 150, 150, .33);
-    }
   </style>
 
   <script>
@@ -54,9 +41,11 @@
     })
 
     $(window).keypress(function (e) {
+      console.log(e)
       if (e.keyCode === 0 || e.keyCode === 32) {
         if ($('input:focus, textarea:focus').length) return
         App.trigger('play_pause')
+        e.preventDefault();
       }
     })
 
