@@ -342,7 +342,7 @@ var changes = db.changes({
     if (changeDebounce) window.clearTimeout(changeDebounce);
 
     changeDebounce = window.setTimeout(function () {
-      sort(true); // true = rerun last limit
+      sort();
     }, 200);
   }
 }).on('complete', function (info) {
@@ -402,14 +402,7 @@ var sort = function (limit) {
 };
 
 var fastRenderTimeout = null;
-var lastLimit = null;
 function fastRender(limit) {
-  if (limit === true) {
-    // Rerun last render
-    limit = lastLimit;
-  } else if (limit) {
-    lastLimit = limit;
-  }
 
   if (fastRenderTimeout) window.clearTimeout(fastRenderTimeout);
 
@@ -439,6 +432,11 @@ function fastRender(limit) {
 
     self.update();
   }
+
+  if (limit) $r.one('scroll', function () {
+    console.log(limit);
+    fastRender();
+  });
 
   addTracks();
 }
@@ -571,7 +569,6 @@ App.on('filter_tracks_by', function (query) {
   if (cols.length === 2) {
     query = cols[1].trim().toLowerCase();
     field = cols[0];
-    console.log(query, field);
     exact = true;
   } else {
     arr = query.toLowerCase().split(' ');
@@ -610,9 +607,5 @@ App.on('filter_tracks_by', function (query) {
   });
 
   fastRender(100);
-
-  $r.one('scroll', function () {
-    fastRender(Infinity);
-  });
 });
 }, '{ }');
